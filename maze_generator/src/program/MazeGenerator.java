@@ -6,8 +6,8 @@ import mazeGenerator.MazeGenDFS;
 import mazeGenerator.MazeGenPrim;
 
 public class MazeGenerator {
-
-	public static void main(String[] args) {
+	
+	public static void run() {
 		MazeGeneratorReadConfig cfg = new MazeGeneratorReadConfig("config.ini");
 
 		int width = Integer.parseInt(cfg.get("width"));
@@ -30,6 +30,10 @@ public class MazeGenerator {
 			gen.generate();
 			drawer.updateMaze(gen.getMaze());
 		}
+	}
+
+	public static void main(String[] args) {
+		MazeGenerator.run();
 	}
 
 }
