@@ -49,4 +49,4 @@ to the terminal.
 
 
 # License
-This code is protected under the GNU General Public License 3.0
+This code is protected under the [GNU General Public License 3.0](http://www.gnu.org/licenses/gpl-3.0.html)
