@@ -22,8 +22,8 @@ MazeGenerator.run();
 ```
 
 # Configuration
-The configuration file, config.ini, can be used to customize the output of the Maze Generator.
-Currently, you can modify the width, height, and maze type here.
+The configuration file, config.conf, can be used to customize the output of the Maze Generator.
+Currently, you can modify the width, height, seed, animation settings, timer settings and maze type here.
 
 Changing the maze dimensions, will cause the maze to have more 'rooms' and hallways, and it
 will automatically scale the size of each hallway to fit your screen.
@@ -31,6 +31,21 @@ will automatically scale the size of each hallway to fit your screen.
 Changing the type variable, will change which algorithm is used to create the maze. Currently
 the only options here are the keywords 'dfs' and 'prim' (without the quotes). This sets the 
 Maze Generator to use the randomized Depth First Search or randomized Prim's algorithm respectively.
+
+The seed causes your maze to generate with the given seed. This means that as long as your
+initial conditions (width, height, generation algorithm and seed) are the same, the maze
+generator will generate the same maze every time you run the code.
+
+The 'animate' setting can be set to either true or false whether you want the 
+generation process to be animated or not. Furthermore, you can change the speed at which
+the generation process runs, by changing the animation delay. A higher delay value
+causes the maze to generate slower. I recommend a value between 0 and 20 depending
+on the maze size.
+
+The timer setting can be used to turn on or off the timer showing after the maze
+has generated. While the timer variable is true, the program will state the time
+it took to generate the maze after it is done generating. This will be printed
+to the terminal.
 
 
 # License

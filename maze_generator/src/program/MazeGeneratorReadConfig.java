@@ -21,12 +21,16 @@ public class MazeGeneratorReadConfig {
 	public void read() {
 		try {
 			this.prop.clear(); 
-			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName); 
+			ClassLoader loader = getClass().getClassLoader();
+			InputStream inputStream = loader.getResourceAsStream(propFileName); 
 
 			if (inputStream != null) {
 				prop.load(inputStream);
 			} else {
-				throw new FileNotFoundException("Property file " + propFileName + " not found in the classpath.");
+				throw new FileNotFoundException(
+					"Property file " + propFileName
+					+ " not found in the classpath."
+				);
 			}
 			inputStream.close();
 		} catch (Exception e) {
@@ -37,10 +41,37 @@ public class MazeGeneratorReadConfig {
 	public String get(String key) {
 		return this.prop.getProperty(key);
 	}
-
-	public static void main(String[] args) {
-		MazeGeneratorReadConfig cfg = new MazeGeneratorReadConfig("config.ini");
-		System.out.println(cfg.get("height"));
+	
+	public boolean getBoolean(String key) {
+		return Boolean.parseBoolean(this.get(key));
+	}
+	
+	public long getLong(String key) {
+		long value = 0;
+		try {
+			value = Long.parseLong(this.get(key));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		if (value < 0) {
+			return 0;
+		}
+		return value;
+	}
+	
+	public int getPositiveInteger(String key) {
+		int value = 0;
+		try {
+			value = Integer.parseInt(this.get(key));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		if (value < 0) {
+			return 0;
+		}
+		return value;
 	}
 
 }

@@ -14,20 +14,44 @@ public class MazeGenDFS extends MazeGen {
 	 * Constructs a maze generator which uses the randomized DFS algorithm
 	 * @param width of the maze measured in number of nodes
 	 * @param height of the maze measured in number of nodes
+	 * @param drawer of type MazeDrawer, 
+	 * 		  the class which handles the drawing of the maze.
+	 * @param animate boolean, indicating whether the maze generation process 
+	 * 		  should be animated.
+	 * @param animation delay integer defining the length in milliseconds
+	 * 		  for the delay each animation step. (i.e. each time the maze
+	 * 		  is redrawn.)
+	 * @param timer boolean, indicating whether the maze generation process
+	 * 		  should be timed and printed to the console.
 	 */
-	public MazeGenDFS(int width, int height, MazeDrawer drawer) {
-		super(width, height, drawer);
+	public MazeGenDFS(int width, int height, MazeDrawer drawer,
+					  boolean animate, int animationDelay) {
+		super(width, height, drawer, animate, animationDelay);
+		seed = rnd.nextLong();
+		rnd.setSeed(seed);
 	}
 	
 	/**
 	 * Constructs a maze generator which uses the randomized DFS algorithm
 	 * @param width of the maze measured in number of nodes
 	 * @param height of the maze measured in number of nodes
+	 * @param drawer of type MazeDrawer, 
+	 * 		  the class which handles the drawing of the maze.
 	 * @param seed to generate a maze identical each time
+	 * @param animate boolean, indicating whether the maze generation process 
+	 * 		  should be animated.
+	 * @param animation delay integer defining the length in milliseconds
+	 * 		  for the delay each animation step. (i.e. each time the maze
+	 * 		  is redrawn.)
+	 * @param timer boolean, indicating whether the maze generation process
+	 * 		  should be timed and printed to the console.
 	 */
-	public MazeGenDFS(int width, int height, long seed, MazeDrawer drawer) {
-		this(width, height, drawer);
-		rnd.setSeed(seed);
+	public MazeGenDFS(int width, int height, MazeDrawer drawer,
+					  long seed, boolean animate, int animationDelay) {
+		this(width, height, drawer, animate, animationDelay);
+		if (seed != 0) {
+			rnd.setSeed(seed);
+		}
 	}
 
 	/**

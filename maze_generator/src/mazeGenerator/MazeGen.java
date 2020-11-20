@@ -11,18 +11,43 @@ public abstract class MazeGen {
 	protected MazeDrawer drawer;
 	protected int startX = 0, 
 				  startY = 0;
-	protected int delayDuration = 0;
+	protected boolean animate = true;
+	protected int animationDelay = 0;
+	protected boolean timer = false;
 	
 	/**
-	 * Constructs a MazeGenerator with maze width and height given in number of nodes.
+	 * Constructs a MazeGenerator with maze width 
+	 * and height given in number of nodes.
 	 * @param width measured in nodes
 	 * @param height measured in nodes
+	 * @param drawer of type MazeDrawer, 
+	 * 		  the class which handles the drawing of the maze.
 	 */
 	public MazeGen(int width, int height, MazeDrawer drawer) {
 		this.maze = new Maze(width, height);
 		this.drawer = drawer;
 		startX = width/2;
 		startY = height/2;
+	}
+	
+	/**
+	 * Constructs a MazeGenerator with maze width 
+	 * and height given in number of nodes.
+	 * @param width measured in nodes
+	 * @param height measured in nodes
+	 * @param drawer of type MazeDrawer, 
+	 * 		  the class which handles the drawing of the maze.
+	 * @param animate boolean, indicating whether the maze generation process 
+	 * 		  should be animated.
+	 * @param animation delay integer defining the length in milliseconds
+	 * 		  for the delay each animation step. (i.e. each time the maze
+	 * 		  is redrawn.)
+	 */
+	public MazeGen(int width, int height, MazeDrawer drawer, 
+				   boolean animate, int animationDelay) {
+		this(width, height, drawer);
+		this.animate = animate;
+		this.animationDelay = animationDelay;
 	}
 	
 	/**
@@ -46,9 +71,16 @@ public abstract class MazeGen {
 	 */
 	public void delay() {
 		try {
-			Thread.sleep(delayDuration);
+			Thread.sleep(animationDelay);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public void setAnimationDelay(int animationDelay) {
+		if (animationDelay < 0) {
+			System.err.println("Animation delay cannot be negative!");
+			animationDelay = 0;
 		}
 	}
 	
@@ -92,8 +124,10 @@ public abstract class MazeGen {
 	 * Delays and then updates the drawn maze.
 	 */
 	public void mazeChanged() {
-		delay();
-		this.drawer.updateMaze(this.maze);
+		if (animate) {
+			delay();
+			this.drawer.updateMaze(this.maze);
+		}
 	}
 
 	/**
@@ -107,16 +141,6 @@ public abstract class MazeGen {
 	@Override
 	public String toString() {
 		return maze.toString();
-	}
-	
-	public static void main(String[] args) {
-		int w = 100;
-		int h = 100;
-		MazeDrawer drawer = new MazeDrawer(w, h);
-		MazeGen gen = new MazeGenDFS(w, h, drawer);
-//		MazeGen gen = new MazeGenDFS(w, h, drawer);
-		gen.generate();
-		drawer.updateMaze(gen.getMaze());
 	}
 
 }
