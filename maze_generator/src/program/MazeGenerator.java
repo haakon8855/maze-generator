@@ -7,7 +7,7 @@ import mazeGenerator.MazeGenPrim;
 
 public class MazeGenerator {
 	
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	
 	public static void run(String config) {
 		MazeGeneratorReadConfig cfg = new MazeGeneratorReadConfig(config);
