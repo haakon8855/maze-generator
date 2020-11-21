@@ -28,11 +28,12 @@ Currently, you can modify the width, height, seed, animation settings, timer set
 Changing the maze dimensions, will cause the maze to have more 'rooms' and hallways, and it
 will automatically scale the size of each hallway to fit your screen. Each dimension must be
 at least 5 and should not be larger than three times the other dimension.  
+**Possible values:** any positive integer larger than 5  
 ###### Example:  
 
 ```
-width=20
-height=20
+width = 20
+height = 20
 ```
 
 ### Maze type (algorithm)
@@ -42,7 +43,7 @@ Maze Generator to use either randomized Depth First Search or randomized Prim's 
 ###### Example:
 
 ```
-type=dfs
+type = dfs
 ```
 
 ### Seed
@@ -55,7 +56,7 @@ If seed is 0, program will generate its own random seed, resulting in a random m
 ###### Example:
 
 ```
-seed=8855
+seed = 8855
 ```
 
 #### Animation
@@ -71,8 +72,8 @@ on the maze size.
 ###### Example:
 
 ```
-animate=true
-animationDelay=5
+animate = true
+animationDelay = 5
 ```
 
 #### Timer
@@ -84,7 +85,7 @@ to the terminal.
 ###### Example:
 
 ```
-timer=true
+timer = true
 ```
 
 
