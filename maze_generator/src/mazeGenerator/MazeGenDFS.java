@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import datatypes.Node;
 import datatypes.NodeCollection;
+import program.MazeGenerator;
 
 public class MazeGenDFS extends MazeGen {
 	
@@ -62,6 +63,9 @@ public class MazeGenDFS extends MazeGen {
 		super.generate();
 		int startX = maze.getWidth()/2;
 		int startY = maze.getHeight()/2;
+		if (MazeGenerator.DEBUG) {
+			startTimer();
+		}
 		Node startNode = new Node(startX, startY);
 		NodeCollection visited = new NodeCollection();
 		visited.add(startNode);
@@ -89,6 +93,10 @@ public class MazeGenDFS extends MazeGen {
 				stack.push(chosenNode);
 				mazeChanged();
 			}
+		}
+		if (MazeGenerator.DEBUG) {
+			long elapsed = endTimer();
+			System.out.println("Generation: " + elapsed + "ms");
 		}
 	}
 

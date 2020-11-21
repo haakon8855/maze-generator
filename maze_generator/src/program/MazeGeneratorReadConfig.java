@@ -38,14 +38,30 @@ public class MazeGeneratorReadConfig {
 		}
 	}
 
+	/**
+	 * Fetches a single value from the config and returns it as a string.
+	 * @param key, indicating which value to fetch from the config.
+	 * @return a string holding the value at 'key' in the config.
+	 */
 	public String get(String key) {
 		return this.prop.getProperty(key);
 	}
 	
+	/**
+	 * Fetches the value from the config file, and treating it as a boolean.
+	 * @param key, indicating which variable in the config file to fetch.
+	 * @return boolean value of key
+	 */
 	public boolean getBoolean(String key) {
 		return Boolean.parseBoolean(this.get(key));
 	}
 	
+	/**
+	 * Fetches the value from the config file, and treating it as a long.
+	 * If the integer value is negative, 0 is returned.
+	 * @param key, indicating which variable in the config file to fetch.
+	 * @return A positive integer of type long.
+	 */
 	public long getLong(String key) {
 		long value = 0;
 		try {
@@ -60,6 +76,12 @@ public class MazeGeneratorReadConfig {
 		return value;
 	}
 	
+	/**
+	 * Fetches the key from the config file, and treating it as an integer.
+	 * If the integer value is negative, 0 is returned.
+	 * @param key, indicating which variable in the config file to fetch.
+	 * @return A positive integer.
+	 */
 	public int getPositiveInteger(String key) {
 		int value = 0;
 		try {

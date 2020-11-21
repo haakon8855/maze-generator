@@ -7,6 +7,8 @@ import mazeGenerator.MazeGenPrim;
 
 public class MazeGenerator {
 	
+	public static boolean DEBUG = true;
+	
 	public static void run(String config) {
 		MazeGeneratorReadConfig cfg = new MazeGeneratorReadConfig(config);
 
@@ -41,7 +43,7 @@ public class MazeGenerator {
 									  animate, animationDelay);
 				break;
 			default:
-				System.out.println("Invalid maze type, check config file for guide");
+				System.out.println("Invalid maze type, check README.md for guide");
 				break;
 		}
 		if (gen != null) {

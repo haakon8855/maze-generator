@@ -21,7 +21,7 @@ public class MazeDrawer {
 	 * @param heightInBlocks given in number of nodes/blocks
 	 */
 	public MazeDrawer(int widthInBlocks, int heightInBlocks) {
-		this.frame = new JFrame("Mazeify");
+		this.frame = new JFrame("Håkon's Maze Generator");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;

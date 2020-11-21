@@ -69,6 +69,27 @@ public class Node {
 	 * Gets all neighbouring nodes to this node
 	 * @return Collection<Node> of the neighbouring nodes. Maximum 4
 	 */
+	public Node[] getNeighboursArray(int width, int height) {
+		Node[] neighbours = {null, null, null, null};
+		if (x > 0) {
+			neighbours[0] = new Node(x-1, y);
+		}
+		if (x < width-1) {
+			neighbours[1] = new Node(x+1, y);
+		}
+		if (y > 0) {
+			neighbours[2] = new Node(x, y-1);
+		}
+		if (y < height-1) {
+			neighbours[3] = new Node(x, y+1);
+		}
+		return neighbours;
+	}
+
+	/**
+	 * Gets all neighbouring nodes to this node
+	 * @return Collection<Node> of the neighbouring nodes. Maximum 4
+	 */
 	public NodeCollection getNeighbours(int width, int height) {
 		NodeCollection neighbours = new NodeCollection();
 		if (x > 0) {

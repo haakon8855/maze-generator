@@ -14,6 +14,8 @@ public abstract class MazeGen {
 	protected boolean animate = true;
 	protected int animationDelay = 0;
 	protected boolean timer = false;
+	protected long startTime = -1;
+	protected long endTime;
 	
 	/**
 	 * Constructs a MazeGenerator with maze width 
@@ -67,7 +69,8 @@ public abstract class MazeGen {
 	}
 
 	/**
-	 * Pauses execution for the delay duration specified in the delayDuration variable
+	 * Pauses execution for the delay duration 
+	 * specified in the delayDuration variable
 	 */
 	public void delay() {
 		try {
@@ -88,20 +91,26 @@ public abstract class MazeGen {
 	 * Creates all possible walls in the maze.
 	 */
 	public void setAllWalls() {
-		for (int y = 0; y < maze.getHeight(); y++) {
-			for (int x = 0; x < maze.getWidth(); x++) {
+		int mazeWidth = maze.getWidth();
+		int mazeHeight = maze.getHeight();
+		for (int y = 0; y < mazeHeight; y++) {
+			for (int x = 0; x < mazeWidth; x++) {
 				Node currentNode = new Node(x, y);
-				int width = maze.getWidth();
-				int height = maze.getHeight();
-				for (Node neighbour : currentNode.getNeighbours(width, height)) {
-					maze.addWall(currentNode, neighbour);
+				Node[] neighbours = currentNode.getNeighboursArray(mazeWidth, 
+																   mazeHeight);
+				for (int i = 0; i < neighbours.length; i++) {
+					Node neighbour = neighbours[i];
+					if (neighbour != null) {
+						maze.addWall(currentNode, neighbour);
+					}
 				}
 			}
 		}
 	}
-
+	
 	/**
-	 * Gives all nodes in the maze a value of 1, indicating that they have not yet been visited
+	 * Gives all nodes in the maze a value of 1, 
+	 * indicating that they have not yet been visited
 	 */
 	public void setAllNodes() {
 		for (int y = 0; y < maze.getHeight(); y++) {
@@ -110,7 +119,7 @@ public abstract class MazeGen {
 			}
 		}
 	}
-	
+
 	/**
 	 * Fetches the Maze-instance for this MazeGenerator
 	 * @return maze object representing the current maze
@@ -128,6 +137,21 @@ public abstract class MazeGen {
 			delay();
 			this.drawer.updateMaze(this.maze);
 		}
+	}
+	
+	public void startTimer() {
+		startTime = System.currentTimeMillis();
+	}
+	
+	public long endTimer() {
+		if (startTime < 0) {
+			throw new IllegalStateException("Attempted to stop timer before"
+					+ "timer was started!");
+		}
+		endTime = System.currentTimeMillis();
+		long elapsed = endTime - startTime;
+		startTime = endTime = 0;
+		return elapsed;
 	}
 
 	/**
