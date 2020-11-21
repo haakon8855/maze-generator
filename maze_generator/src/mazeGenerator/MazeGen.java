@@ -90,6 +90,10 @@ public abstract class MazeGen {
 		}
 	}
 	
+	/**
+	 * Sets the animation delay to the given value
+	 * @param animationDelay, cannot be negative
+	 */
 	public void setAnimationDelay(int animationDelay) {
 		if (animationDelay < 0) {
 			System.err.println("Animation delay cannot be negative!");
@@ -150,10 +154,18 @@ public abstract class MazeGen {
 		}
 	}
 	
+	/**
+	 * Starts the timer for the generation phase
+	 */
 	public void startTimer() {
 		startTime = System.currentTimeMillis();
 	}
 	
+	/**
+	 * Ends the timer for the generation phase and returns the elapsed time
+	 * @return elapsed time since startTimer was called
+	 * @throws IllegalStateException if called before startTimer.
+	 */
 	public long endTimer() {
 		if (startTime < 0) {
 			throw new IllegalStateException("Attempted to stop timer before"

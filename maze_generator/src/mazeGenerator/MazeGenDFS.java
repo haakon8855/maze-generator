@@ -61,11 +61,11 @@ public class MazeGenDFS extends MazeGen {
 	@Override
 	public void generate() {
 		super.generate();
+		startTimer();
 		int startX = maze.getWidth()/2;
 		int startY = maze.getHeight()/2;
-		if (MazeGenerator.DEBUG) {
-			startTimer();
-		}
+		int mazeWidth = maze.getWidth();
+		int mazeHeight = maze.getHeight();
 		Node startNode = new Node(startX, startY);
 		NodeCollection visited = new NodeCollection();
 		visited.add(startNode);
@@ -76,16 +76,17 @@ public class MazeGenDFS extends MazeGen {
 		Node currentNode, chosenNode;
 		while (!stack.isEmpty()) {
 			currentNode = stack.pop();
-			NodeCollection neighbours = currentNode.getNeighbours(maze.getWidth(), maze.getHeight());
+			NodeCollection neighbours = currentNode.getNeighbours(mazeWidth, mazeHeight);
 			NodeCollection unvisitedNeighbours = new NodeCollection();
 			for (Node neighbour : neighbours) {
 				if (!visited.contains(neighbour)) {
 					unvisitedNeighbours.add(neighbour);
 				}
 			}
-			if (unvisitedNeighbours.size() > 0) {
+			int numberOfUnvisited = unvisitedNeighbours.size();
+			if (numberOfUnvisited > 0) {
 				stack.push(currentNode);
-				int randint = rnd.nextInt(unvisitedNeighbours.size());
+				int randint = rnd.nextInt(numberOfUnvisited);
 				chosenNode = unvisitedNeighbours.get(randint);
 				maze.removeWall(currentNode, chosenNode);
 				visited.add(chosenNode);
@@ -94,8 +95,8 @@ public class MazeGenDFS extends MazeGen {
 				mazeChanged();
 			}
 		}
+		long elapsed = endTimer();
 		if (MazeGenerator.DEBUG) {
-			long elapsed = endTimer();
 			System.out.println("Generation: " + elapsed + "ms");
 		}
 	}

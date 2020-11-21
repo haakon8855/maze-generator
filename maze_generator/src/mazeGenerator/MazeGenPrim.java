@@ -6,6 +6,7 @@ import datatypes.Node;
 import datatypes.NodeCollection;
 import datatypes.Wall;
 import datatypes.WallCollection;
+import program.MazeGenerator;
 
 public class MazeGenPrim extends MazeGen {
 	
@@ -61,13 +62,16 @@ public class MazeGenPrim extends MazeGen {
 	@Override
 	public void generate() {
 		super.generate();
+		startTimer();
 		Node startNode = new Node(startX, startY);
 		NodeCollection visited = new NodeCollection();
 		visited.add(startNode);
 		maze.setNodeValue(startNode, 0);
 		mazeChanged();
 		WallCollection walls = new WallCollection();
-		for (Node neighbour : startNode.getNeighbours(maze.getWidth(), maze.getHeight())) {
+		int mazeWidth = maze.getWidth();
+		int mazeHeight = maze.getHeight();
+		for (Node neighbour : startNode.getNeighbours(mazeWidth, mazeHeight)) {
 			walls.add(new Wall(startNode, neighbour));
 		}
 		int randint;
@@ -82,7 +86,7 @@ public class MazeGenPrim extends MazeGen {
 				visited.add(nodeB);
 				maze.setNodeValue(nodeB, 0);
 				mazeChanged();
-				for (Node neighbour : nodeB.getNeighbours(maze.getWidth(), maze.getHeight())) {
+				for (Node neighbour : nodeB.getNeighbours(mazeWidth, mazeHeight)) {
 					walls.add(new Wall(nodeB, neighbour));
 				}
 			} else if (!visited.contains(nodeA) && visited.contains(nodeB)) {
@@ -90,11 +94,15 @@ public class MazeGenPrim extends MazeGen {
 				visited.add(nodeA);
 				maze.setNodeValue(nodeB, 0);
 				mazeChanged();
-				for (Node neighbour : nodeA.getNeighbours(maze.getWidth(), maze.getHeight())) {
+				for (Node neighbour : nodeA.getNeighbours(mazeWidth, mazeHeight)) {
 					walls.add(new Wall(nodeA, neighbour));
 				}
 			}
 			walls.remove(randomWall);
+		}
+		long elapsed = endTimer();
+		if (MazeGenerator.DEBUG) {
+			System.out.println("Generation: " + elapsed + "ms");
 		}
 	}
 
