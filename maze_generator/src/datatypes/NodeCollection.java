@@ -1,14 +1,13 @@
 package datatypes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class NodeCollection implements Iterable<Node> {
 	
-	private final Collection<Node> nodeCollection = new ArrayList<Node>();
+	private final List<Node> nodeCollection = new ArrayList<Node>();
 	
 	/**
 	 * Adds a node to the collection of nodes, but only if
@@ -28,7 +27,9 @@ public class NodeCollection implements Iterable<Node> {
 	 * inNode is not in the collection
 	 */
 	public Node get(Node inNode) {
-		for (Node node : nodeCollection) {
+		Node node;
+		for (int i = 0; i < nodeCollection.size(); i++) {
+			node = nodeCollection.get(i);
 			if (node.equals(inNode)) {
 				return node;
 			}

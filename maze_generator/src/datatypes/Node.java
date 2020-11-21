@@ -66,22 +66,16 @@ public class Node {
 	}
 
 	/**
-	 * Gets all neighbouring nodes to this node
-	 * @return Collection<Node> of the neighbouring nodes. Maximum 4
+	 * Gets the neighbouring nodes to the south and east of this node
+	 * @return Node-array of the south and east neighbouring nodes.
 	 */
-	public Node[] getNeighboursArray(int width, int height) {
-		Node[] neighbours = {null, null, null, null};
-		if (x > 0) {
-			neighbours[0] = new Node(x-1, y);
-		}
+	public Node[] getSouthEastNeighboursArray(int width, int height) {
+		Node[] neighbours = {null, null};
 		if (x < width-1) {
-			neighbours[1] = new Node(x+1, y);
-		}
-		if (y > 0) {
-			neighbours[2] = new Node(x, y-1);
+			neighbours[0] = new Node(x+1, y);
 		}
 		if (y < height-1) {
-			neighbours[3] = new Node(x, y+1);
+			neighbours[1] = new Node(x, y+1);
 		}
 		return neighbours;
 	}

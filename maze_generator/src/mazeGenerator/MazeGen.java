@@ -2,6 +2,7 @@ package mazeGenerator;
 
 import datatypes.Maze;
 import datatypes.Wall;
+import program.MazeGenerator;
 import datatypes.Node;
 
 public abstract class MazeGen {
@@ -56,8 +57,17 @@ public abstract class MazeGen {
 	 * Generates a maze with just walls
 	 */
 	public void generate() {
+		long start = System.currentTimeMillis();
+
 		setAllWalls();
-		setAllNodes();
+		if (animate) {
+			setAllNodes();
+		}
+
+		long elapsed = System.currentTimeMillis() - start;
+		if (MazeGenerator.DEBUG) {
+			System.out.println("Setup: " + elapsed + "ms");
+		}
 	}
 	
 	/**
@@ -96,8 +106,9 @@ public abstract class MazeGen {
 		for (int y = 0; y < mazeHeight; y++) {
 			for (int x = 0; x < mazeWidth; x++) {
 				Node currentNode = new Node(x, y);
-				Node[] neighbours = currentNode.getNeighboursArray(mazeWidth, 
-																   mazeHeight);
+				Node[] neighbours = currentNode
+									.getSouthEastNeighboursArray(mazeWidth, 
+																 mazeHeight);
 				for (int i = 0; i < neighbours.length; i++) {
 					Node neighbour = neighbours[i];
 					if (neighbour != null) {

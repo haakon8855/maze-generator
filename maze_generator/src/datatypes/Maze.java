@@ -121,7 +121,7 @@ public class Maze {
 		Node node = new Node(x, y);
 		setNodeValue(node, value);
 	}
-
+	
 	/**
 	 * Returns the value assigned to the given node. If the node is not in the nodeCollection its 
 	 * value is 0 by default.
