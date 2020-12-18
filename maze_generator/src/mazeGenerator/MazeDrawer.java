@@ -1,9 +1,11 @@
 package mazeGenerator;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import datatypes.Maze;
 import datatypes.Node;
@@ -13,6 +15,8 @@ public class MazeDrawer {
 	
 	private int width, height;
 	private JFrame frame;
+	private JPanel container;
+	private JPanel settingsPanel;
 	private MazeDrawerCanvas canvas;
 	
 	/**
@@ -46,11 +50,22 @@ public class MazeDrawer {
 		
 		// sets location to center of screen
 		this.frame.setLocation((screenWidth-this.width)/2, (screenHeight-this.height)/2);
+		this.container = new JPanel(new FlowLayout());
 		
 		this.canvas = new MazeDrawerCanvas(blocksize, blocksize);
-		canvas.setSize(width, height);
-		canvas.setPreferredSize(new Dimension(width, height));
-		this.frame.add(canvas);
+		this.canvas.setSize(width, height);
+		this.canvas.setPreferredSize(new Dimension(width, height));
+		this.container.add(this.canvas);
+		
+		this.settingsPanel = new JPanel();
+		// temprorary size
+		Dimension settingsDim = new Dimension(400, height);
+		this.settingsPanel.setSize(settingsDim);
+		this.settingsPanel.setPreferredSize(settingsDim);
+		this.container.add(settingsPanel);
+
+		
+		this.frame.add(this.container);
 		this.frame.pack();
 		this.frame.setResizable(false);
 		this.frame.setVisible(true);
