@@ -60,14 +60,14 @@ public class MazeGenPrim extends MazeGen {
 	 * Generates a maze using the randomized Prim's algorithm
 	 */
 	@Override
-	public void generate() {
-		super.generate();
+	public void generate(SwingWorkerGenerate worker) {
+		super.generate(worker);
 		startTimer();
 		Node startNode = new Node(startX, startY);
 		NodeCollection visited = new NodeCollection();
 		visited.add(startNode);
 		maze.setNodeValue(startNode, 0);
-		mazeChanged();
+		mazeChanged(worker);
 		WallCollection walls = new WallCollection();
 		int mazeWidth = maze.getWidth();
 		int mazeHeight = maze.getHeight();
@@ -85,7 +85,7 @@ public class MazeGenPrim extends MazeGen {
 				maze.removeWall(randomWall);
 				visited.add(nodeB);
 				maze.setNodeValue(nodeB, 0);
-				mazeChanged();
+				mazeChanged(worker);
 				for (Node neighbour : nodeB.getNeighbours(mazeWidth, mazeHeight)) {
 					walls.add(new Wall(nodeB, neighbour));
 				}
@@ -93,7 +93,7 @@ public class MazeGenPrim extends MazeGen {
 				maze.removeWall(randomWall);
 				visited.add(nodeA);
 				maze.setNodeValue(nodeB, 0);
-				mazeChanged();
+				mazeChanged(worker);
 				for (Node neighbour : nodeA.getNeighbours(mazeWidth, mazeHeight)) {
 					walls.add(new Wall(nodeA, neighbour));
 				}

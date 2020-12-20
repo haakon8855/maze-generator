@@ -59,8 +59,8 @@ public class MazeGenDFS extends MazeGen {
 	 * Generates a maze with randomized-DFS
 	 */
 	@Override
-	public void generate() {
-		super.generate();
+	public void generate(SwingWorkerGenerate worker) {
+		super.generate(worker);
 		startTimer();
 		int startX = maze.getWidth()/2;
 		int startY = maze.getHeight()/2;
@@ -70,7 +70,7 @@ public class MazeGenDFS extends MazeGen {
 		NodeCollection visited = new NodeCollection();
 		visited.add(startNode);
 		maze.setNodeValue(startNode, 0);
-		mazeChanged();
+		mazeChanged(worker);
 		Stack<Node> stack = new Stack<Node>();
 		stack.push(startNode);
 		Node currentNode, chosenNode;
@@ -92,7 +92,7 @@ public class MazeGenDFS extends MazeGen {
 				visited.add(chosenNode);
 				maze.setNodeValue(chosenNode, 0);
 				stack.push(chosenNode);
-				mazeChanged();
+				mazeChanged(worker);
 			}
 		}
 		long elapsed = endTimer();

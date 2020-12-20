@@ -1,32 +1,42 @@
 package mazeGenerator;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import datatypes.Maze;
 import datatypes.Node;
 import datatypes.Wall;
+import program.MazeGenerator;
 
 public class MazeDrawer {
 	
 	private int width, height;
+	private int animationDelay;
 	private JFrame frame;
 	private JPanel container;
 	private JPanel settingsPanel;
 	private MazeDrawerCanvas canvas;
+	private JButton btnGenerate;
+	
+	private MazeGenerator generator;
 	
 	/**
 	 * Constructs a maze drawer which draws the maze of give width and height 
 	 * @param widthInBlocks given in number of nodes/blocks
 	 * @param heightInBlocks given in number of nodes/blocks
 	 */
-	public MazeDrawer(int widthInBlocks, int heightInBlocks) {
+	public MazeDrawer(int widthInBlocks, int heightInBlocks, int animationDelay, 
+														MazeGenerator generator) {
 		this.frame = new JFrame("Håkon's Maze Generator");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.animationDelay = animationDelay;
+		this.generator = generator;
 		
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -57,11 +67,14 @@ public class MazeDrawer {
 		this.canvas.setPreferredSize(new Dimension(width, height));
 		this.container.add(this.canvas);
 		
-		this.settingsPanel = new JPanel();
+		this.settingsPanel = new JPanel(new BorderLayout());
 		// temprorary size
 		Dimension settingsDim = new Dimension(400, height);
 		this.settingsPanel.setSize(settingsDim);
 		this.settingsPanel.setPreferredSize(settingsDim);
+		btnGenerate = new JButton("Generate!");
+		this.settingsPanel.add(btnGenerate);
+		
 		this.container.add(settingsPanel);
 
 		
@@ -69,6 +82,24 @@ public class MazeDrawer {
 		this.frame.pack();
 		this.frame.setResizable(false);
 		this.frame.setVisible(true);
+		this.addActionListeners();
+	}
+	
+	public void addActionListeners() {
+		btnGenerate.addActionListener(new ActionListenerGenerate(this, generator));
+	}
+
+	// TODO: remove?
+	/**
+	 * Pauses execution for the delay duration 
+	 * specified in the delayDuration variable
+	 */
+	public void delay() {
+		try {
+			Thread.sleep(animationDelay);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -189,7 +220,7 @@ public class MazeDrawer {
 	public void updateMaze(Maze maze) {
 		int[][] bitmap = generateBitmap(maze);
 		canvas.setBitmap(bitmap);
-//		Toolkit.getDefaultToolkit().sync();
+//		delay();
 		canvas.repaint();
 	}
 	
