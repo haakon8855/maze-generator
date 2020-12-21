@@ -86,6 +86,9 @@ public class MazeDrawer {
 		this.addActionListeners();
 	}
 	
+	/**
+	 * Adds the appropriate action listeners for each UI element
+	 */
 	public void addActionListeners() {
 		btnGenerate.addActionListener(new ActionListenerGenerate(this, generator));
 	}
@@ -217,20 +220,17 @@ public class MazeDrawer {
 	 * Updates the canvas with the given maze
 	 * @param maze, instance of Maze.
 	 */
-	public void updateMaze(Maze maze, boolean doDelay) {
+	public void updateMaze(Maze maze) {
 		int[][] bitmap = generateBitmap(maze);
-		updateMaze(bitmap, doDelay);
+		updateMaze(bitmap);
 	}
 	
 	/**
 	 * Updates the canvas with the given maze
 	 * @param maze bitmap of type int[][].
 	 */
-	public void updateMaze(int[][] bitmap, boolean doDelay) {
+	public void updateMaze(int[][] bitmap) {
 		canvas.setBitmap(bitmap);
-		if (doDelay) {
-			delay();
-		}
 		canvas.repaint();
 	}
 	

@@ -79,7 +79,7 @@ public class MazeGenerator {
 				elapsed = endTime - startTime;
 				System.out.println("Time: " + elapsed + "ms");
 			}
-			drawer.updateMaze(gen.getMaze(), true);
+			drawer.updateMaze(gen.getMaze());
 		}
 	}
 
