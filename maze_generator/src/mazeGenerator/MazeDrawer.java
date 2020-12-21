@@ -33,11 +33,87 @@ public class MazeDrawer {
 	 */
 	public MazeDrawer(int widthInBlocks, int heightInBlocks, int animationDelay, 
 														MazeGenerator generator) {
+		// Set up main JFrame
 		this.frame = new JFrame("Håkon's Maze Generator");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		this.animationDelay = animationDelay;
 		this.generator = generator;
 		
+		// Calculate some needed values
+		int blocksize = calculateBlocksize(widthInBlocks, heightInBlocks);
+		
+		this.width = calculateWidth(widthInBlocks, blocksize);	// width in pixels
+		this.height = calculateHeight(heightInBlocks, blocksize); // height in pixels
+		
+		// Put window in the center of the screen
+		centerScreen();
+		
+		// Main flowLayout-style-container for all other UI-elements
+		this.container = new JPanel(new FlowLayout());
+		
+		// Initialize the canvas
+		initCanvas(blocksize, blocksize);
+		
+		// Initialize the settings panel
+		initSettingsPanel();
+
+		// Finally, add the main container JPanel to the frame
+		this.frame.add(this.container);
+		this.frame.pack();
+		this.frame.setResizable(false);
+		this.frame.setVisible(true);
+
+		// Initialize the necessary action listeners for the UI-elements
+		this.addActionListeners();
+	}
+	
+	/**
+	 * Initializes the settings panel by setting its size, and adding its components
+	 */
+	private void initSettingsPanel() {
+		this.settingsPanel = new JPanel(new BorderLayout());
+		// temprorary size
+		Dimension settingsDim = new Dimension(400, height);
+		this.settingsPanel.setSize(settingsDim);
+		this.settingsPanel.setPreferredSize(settingsDim);
+		btnGenerate = new JButton("Generate!");
+		this.settingsPanel.add(btnGenerate);
+		
+		this.container.add(settingsPanel);
+	}
+	
+	/**
+	 * Initializes the mazeCanvas with given sizes
+	 * @param blocksize, an integer, the width in pixels of each corridor
+	 * @param wallWidth, an integer, the width in pixels of each wall
+	 */
+	private void initCanvas(int blocksize, int wallWidth) {
+		this.canvas = new MazeDrawerCanvas(blocksize, wallWidth);
+		this.canvas.setSize(width, height);
+		this.canvas.setPreferredSize(new Dimension(width, height));
+		this.container.add(this.canvas);
+	}
+	
+	/**
+	 * Centers the window on the screen such that it is in roughly the same location each time
+	 * regardless of the maze size.
+	 */
+	private void centerScreen() {
+		// Dimensions of users screen
+		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+		int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+		// sets location to center of screen
+		this.frame.setLocation((screenWidth-this.width)/2, (screenHeight-this.height)/2);
+	}
+	
+	/**
+	 * Calculate the size in pixels for each block on the screen, i.e. corridor width/height
+	 * @param widthInBlocks
+	 * @param heightInBlocks
+	 * @return blocksize, an integer
+	 */
+	private int calculateBlocksize(int widthInBlocks, int heightInBlocks) {
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 		
@@ -54,36 +130,31 @@ public class MazeDrawer {
 				blocksizeFromWidth < blocksizeFromHeight) {
 			blocksize = blocksizeFromWidth;
 		}
-		
-		this.width = actualWidthInBlocks*blocksize;	// width in pixels
-		this.height = actualHeightInBlocks*blocksize; // height in pixels
-		
-		// sets location to center of screen
-		this.frame.setLocation((screenWidth-this.width)/2, (screenHeight-this.height)/2);
-		this.container = new JPanel(new FlowLayout());
-		
-		this.canvas = new MazeDrawerCanvas(blocksize, blocksize);
-		this.canvas.setSize(width, height);
-		this.canvas.setPreferredSize(new Dimension(width, height));
-		this.container.add(this.canvas);
-		
-		this.settingsPanel = new JPanel(new BorderLayout());
+		return blocksize;
+	}
 
-		// temprorary size
-		Dimension settingsDim = new Dimension(400, height);
-		this.settingsPanel.setSize(settingsDim);
-		this.settingsPanel.setPreferredSize(settingsDim);
-		btnGenerate = new JButton("Generate!");
-		this.settingsPanel.add(btnGenerate);
-		
-		this.container.add(settingsPanel);
-
-		
-		this.frame.add(this.container);
-		this.frame.pack();
-		this.frame.setResizable(false);
-		this.frame.setVisible(true);
-		this.addActionListeners();
+	/**
+	 * Calculate the width of the maze canvas in pixels
+	 * @param widthInBlocks
+	 * @param blocksize
+	 * @return width, an integer
+	 */
+	private int calculateWidth(int widthInBlocks, int blocksize) {
+		int actualWidthInBlocks = widthInBlocks*2-1 + 2;
+		int width = actualWidthInBlocks*blocksize;	// width in pixels
+		return width;
+	}
+	
+	/**
+	 * Calculate the height of the maze canvas in pixels
+	 * @param heightInBlocks
+	 * @param blocksize
+	 * @return height, an integer
+	 */
+	private int calculateHeight(int heightInBlocks, int blocksize) {
+		int actualHeightInBlocks = heightInBlocks*2-1 + 2;
+		int height = actualHeightInBlocks*blocksize; // height in pixels
+		return height;
 	}
 	
 	/**
