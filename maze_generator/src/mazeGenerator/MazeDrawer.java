@@ -68,6 +68,7 @@ public class MazeDrawer {
 		this.container.add(this.canvas);
 		
 		this.settingsPanel = new JPanel(new BorderLayout());
+
 		// temprorary size
 		Dimension settingsDim = new Dimension(400, height);
 		this.settingsPanel.setSize(settingsDim);
@@ -89,7 +90,6 @@ public class MazeDrawer {
 		btnGenerate.addActionListener(new ActionListenerGenerate(this, generator));
 	}
 
-	// TODO: remove?
 	/**
 	 * Pauses execution for the delay duration 
 	 * specified in the delayDuration variable
@@ -112,7 +112,7 @@ public class MazeDrawer {
 	 * @param maze instance with walls and nodes
 	 * @return bitmap of type int[][]
 	 */
-	public int[][] generateBitmap(Maze maze) {
+	public static int[][] generateBitmap(Maze maze) {
 		int width = maze.getWidth()*2 - 1;
 		int height = maze.getHeight()*2 - 1;
 		int[][] bitmap = new int[width][height];
@@ -130,7 +130,7 @@ public class MazeDrawer {
 	 * @param nodes iterable with the nodes from the maze with specified values
 	 * @return bitmap of type int[][] with the nodes as specified int the maze's node-collection
 	 */
-	public int[][] addNodes(int[][] bitmap, Iterable<Node> nodes) {
+	public static int[][] addNodes(int[][] bitmap, Iterable<Node> nodes) {
 		for (Node node : nodes) {
 			int x = node.getX()*2;
 			int y = node.getY()*2;
@@ -146,7 +146,7 @@ public class MazeDrawer {
 	 * @param walls iterable with the walls from the maze
 	 * @return bitmap of type int[][] with the walls as specified in the maze's wall-collection
 	 */
-	private int[][] addWalls(int[][] bitmap, Iterable<Wall> walls) {
+	private static int[][] addWalls(int[][] bitmap, Iterable<Wall> walls) {
 		for (Wall wall : walls) {
 			int x1 = wall.getA().getX()*2;
 			int y1 = wall.getA().getY()*2;
@@ -164,7 +164,7 @@ public class MazeDrawer {
 	 * @param bitmap of type int[][]
 	 * @return bitmap of type int[][] with corner walls (1s) at every node with only odd coords.
 	 */
-	private int[][] addCornerWalls(int[][] bitmap) {
+	private static int[][] addCornerWalls(int[][] bitmap) {
 		for (int y = 0; y < bitmap[0].length; y++) {
 			for (int x = 0; x < bitmap.length; x++) {
 				if (x % 2 != 0 && y % 2 != 0) {
@@ -180,7 +180,7 @@ public class MazeDrawer {
 	 * @param bitmap of type int[][]
 	 * @return bitmap of type int[][] with border walls (1s) at around the edges 
 	 */
-	private int[][] addBorderWalls(int[][] bitmap) {
+	private static int[][] addBorderWalls(int[][] bitmap) {
 		int w = bitmap.length+2;
 		int h = bitmap[0].length+2;
 		int[][] outbitmap = new int[w][h];
@@ -202,7 +202,7 @@ public class MazeDrawer {
 	 * @param bitmap of type int[][] which contains the maze's walls, borders and nodes.
 	 * @return string representation of the given bitmap, aka. maze.
 	 */
-	public String bitmapToString(int[][] bitmap) {
+	public static String bitmapToString(int[][] bitmap) {
 		String outString = "";
 		for (int y = 0; y < bitmap[0].length; y++) {
 			for (int x = 0; x < bitmap.length; x++) {
@@ -217,10 +217,20 @@ public class MazeDrawer {
 	 * Updates the canvas with the given maze
 	 * @param maze, instance of Maze.
 	 */
-	public void updateMaze(Maze maze) {
+	public void updateMaze(Maze maze, boolean doDelay) {
 		int[][] bitmap = generateBitmap(maze);
+		updateMaze(bitmap, doDelay);
+	}
+	
+	/**
+	 * Updates the canvas with the given maze
+	 * @param maze bitmap of type int[][].
+	 */
+	public void updateMaze(int[][] bitmap, boolean doDelay) {
 		canvas.setBitmap(bitmap);
-//		delay();
+		if (doDelay) {
+			delay();
+		}
 		canvas.repaint();
 	}
 	

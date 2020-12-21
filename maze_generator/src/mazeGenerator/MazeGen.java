@@ -139,7 +139,6 @@ public abstract class MazeGen {
 		if (animate) {
 			worker.update(maze);
 			delay();
-//			this.drawer.updateMaze(this.maze);
 		}
 	}
 	

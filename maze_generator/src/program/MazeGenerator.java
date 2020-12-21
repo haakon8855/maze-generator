@@ -41,7 +41,9 @@ public class MazeGenerator {
 		this.seed = cfg.getLong("seed");
 
 		this.drawer = new MazeDrawer(width, height, animationDelay, this);
-		this.gen = null;
+	}
+	
+	private MazeGen makeNewGenerator() {
 		switch (mazeType) {
 			case "dfs":
 				gen = new MazeGenDFS(width, height, drawer, seed,
@@ -55,9 +57,15 @@ public class MazeGenerator {
 				System.out.println("Invalid maze type, check README.md for guide");
 				break;
 		}
+		return gen;
 	}
 	
+	/**
+	 * Generates the maze itself, can be called multiple times to create new.
+	 * @param worker of SwingWorker type to run maze generation on separate thread.
+	 */
 	public void generate(SwingWorkerGenerate worker) {
+		makeNewGenerator();
 		if (gen != null) {
 			long startTime = 0;
 			long endTime = 0;
@@ -71,7 +79,7 @@ public class MazeGenerator {
 				elapsed = endTime - startTime;
 				System.out.println("Time: " + elapsed + "ms");
 			}
-			drawer.updateMaze(gen.getMaze());
+			drawer.updateMaze(gen.getMaze(), true);
 		}
 	}
 

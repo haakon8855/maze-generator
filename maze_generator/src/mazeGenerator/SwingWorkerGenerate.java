@@ -1,6 +1,5 @@
 package mazeGenerator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
@@ -8,11 +7,10 @@ import javax.swing.SwingWorker;
 import datatypes.Maze;
 import program.MazeGenerator;
 
-public class SwingWorkerGenerate extends SwingWorker<Integer, Maze> {
+public class SwingWorkerGenerate extends SwingWorker<Integer, int[][]> {
 	
 	private MazeDrawer drawer;
 	private MazeGenerator generator;
-	private List<Maze> mazeStates = new ArrayList<Maze>();
 	
 	public SwingWorkerGenerate(MazeDrawer drawer, MazeGenerator generator) {
 		super();
@@ -26,17 +24,14 @@ public class SwingWorkerGenerate extends SwingWorker<Integer, Maze> {
 	}
 	
 	@Override
-	protected void process(List<Maze> chunks) {
-		mazeStates.addAll(chunks);
-		Maze maze = chunks.get(chunks.size()-1);
-		drawer.updateMaze(maze);
-//		for (Maze maze : chunks) {
-//			drawer.updateMaze(maze);
-//		}
+	protected void process(List<int[][]> chunks) {
+		for (int[][] mazeBitmap : chunks) {
+			drawer.updateMaze(mazeBitmap, true);
+		}
 	}
 	
 	public void update(Maze maze) {
-		publish(maze);
+		publish(MazeDrawer.generateBitmap(maze));
 	}
 
 }
