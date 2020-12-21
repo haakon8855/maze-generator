@@ -1,12 +1,22 @@
 package mazeGenerator;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import datatypes.Maze;
@@ -72,15 +82,63 @@ public class MazeDrawer {
 	 * Initializes the settings panel by setting its size, and adding its components
 	 */
 	private void initSettingsPanel() {
-		this.settingsPanel = new JPanel(new BorderLayout());
+		this.settingsPanel = new JPanel();
+		this.settingsPanel.setLayout(new BoxLayout(this.settingsPanel, BoxLayout.Y_AXIS));
 		// temprorary size
-		Dimension settingsDim = new Dimension(400, height);
+		Dimension settingsDim = new Dimension(300, height);
 		this.settingsPanel.setSize(settingsDim);
 		this.settingsPanel.setPreferredSize(settingsDim);
-		btnGenerate = new JButton("Generate!");
-		this.settingsPanel.add(btnGenerate);
 		
+		JPanel settingsGrid = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(0, 10, 0, 10);
+		c.gridx = 0;
+		c.gridy = 0;
+		settingsGrid.add(new JLabel("Generation Algorithm:"), c);
+		
+		String[] algorithms = {"DFS", "Prim"};
+		JComboBox<String> cbAlgorithms = new JComboBox<String>(algorithms);
+		int selectedIndex = getSelectedMazeTypeIndex(algorithms);
+		cbAlgorithms.setSelectedIndex(selectedIndex);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 0;
+		addCbAlgorithmsActionListener(cbAlgorithms);
+		settingsGrid.add(cbAlgorithms, c);
+		settingsGrid.setAlignmentY(Component.TOP_ALIGNMENT);
+
+		this.settingsPanel.add(settingsGrid);
+
+		this.btnGenerate = new JButton("Generate!");
+		this.btnGenerate.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.settingsPanel.add(btnGenerate);
+
 		this.container.add(settingsPanel);
+	}
+	
+	/**
+	 * Returns the index of the currently set algorithm from the configuration file
+	 * @param list
+	 * @return int index corresponding to the currently selected item in the list
+	 * (index of item from config in given list)
+	 * (sets mazetype to dfs as default if value in config is invalid)
+	 */
+	private int getSelectedMazeTypeIndex(String[] list) {
+		int selectedIndex = -1;
+		for (int i = 0; i < list.length; i++) {
+			String listElement = list[i].toLowerCase();
+			String mazeType = generator.getMazeType().toLowerCase();
+			if (listElement.equals(mazeType)) {
+				selectedIndex = i;
+			}
+		}
+		if (selectedIndex < 0) {
+			selectedIndex = 0;
+			generator.setMazeType("dfs");
+		}
+		return selectedIndex;
 	}
 	
 	/**
@@ -162,6 +220,23 @@ public class MazeDrawer {
 	 */
 	public void addActionListeners() {
 		btnGenerate.addActionListener(new ActionListenerGenerate(this, generator));
+	}
+	
+	/**
+	 * Adds the action listener for the dropdown box setting the selected generation algorithm
+	 * @param cbAlgorithms
+	 */
+	public void addCbAlgorithmsActionListener(JComboBox<String> cbAlgorithms) {
+		ActionListener cbActionListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedItem = (String) cbAlgorithms.getSelectedItem();
+				System.out.println("Selected: " + selectedItem);
+				generator.setMazeType(selectedItem.toLowerCase());
+			}
+		};
+		cbAlgorithms.addActionListener(cbActionListener);
 	}
 
 	/**

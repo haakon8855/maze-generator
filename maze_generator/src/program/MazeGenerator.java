@@ -10,13 +10,13 @@ public class MazeGenerator {
 	
 	public static boolean DEBUG = true;
 	
-	int width, height, animationDelay;
-	String mazeType;
-	long seed;
-	boolean timer, animate;
+	private int width, height, animationDelay;
+	private String mazeType;
+	private long seed;
+	private boolean timer, animate;
 	
-	MazeDrawer drawer;
-	MazeGen gen;
+	private MazeDrawer drawer;
+	private MazeGen gen;
 	
 	public void init(String config) {
 		MazeGeneratorReadConfig cfg = new MazeGeneratorReadConfig(config);
@@ -43,6 +43,18 @@ public class MazeGenerator {
 		this.drawer = new MazeDrawer(width, height, animationDelay, this);
 	}
 	
+	public String getMazeType() {
+		return mazeType;
+	}
+	
+	public void setMazeType(String mazeType) {
+		this.mazeType = mazeType;
+	}
+
+	/**
+	 * Creates a new maze generator corresponding to the currently selected maze type
+	 * @return A MazeGen instance
+	 */
 	private MazeGen makeNewGenerator() {
 		switch (mazeType) {
 			case "dfs":
