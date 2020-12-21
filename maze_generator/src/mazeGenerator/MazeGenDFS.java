@@ -51,6 +51,7 @@ public class MazeGenDFS extends MazeGen {
 					  long seed, boolean animate, int animationDelay) {
 		this(width, height, drawer, animate, animationDelay);
 		if (seed != 0) {
+			this.seed = seed;
 			rnd.setSeed(seed);
 		}
 	}

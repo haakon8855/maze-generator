@@ -25,6 +25,7 @@ import program.MazeGenerator;
 
 public class MazeDrawer {
 	
+	public static final String unknownValueChar = "-                 ";
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -32,6 +33,7 @@ public class MazeDrawer {
 	private JPanel settingsPanel;
 	private MazeDrawerCanvas canvas;
 	private JButton btnGenerate;
+	private JLabel seed;
 	
 	private MazeGenerator generator;
 	
@@ -87,7 +89,7 @@ public class MazeDrawer {
 		this.settingsPanel = new JPanel();
 		this.settingsPanel.setLayout(new BoxLayout(this.settingsPanel, BoxLayout.Y_AXIS));
 		// temprorary size
-		Dimension settingsDim = new Dimension(300, height);
+		Dimension settingsDim = new Dimension(350, height);
 		this.settingsPanel.setSize(settingsDim);
 		this.settingsPanel.setPreferredSize(settingsDim);
 		
@@ -95,7 +97,7 @@ public class MazeDrawer {
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.insets = new Insets(0, 10, 0, 10);
+		c.insets = new Insets(4, 10, 4, 10);
 		c.gridx = 0;
 		c.gridy = 0;
 		settingsGrid.add(new JLabel("Generation Algorithm:"), c);
@@ -110,6 +112,18 @@ public class MazeDrawer {
 		addCbAlgorithmsActionListener(cbAlgorithms);
 		settingsGrid.add(cbAlgorithms, c);
 		settingsGrid.setAlignmentY(Component.TOP_ALIGNMENT);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		settingsGrid.add(new JLabel("Seed: "), c);
+
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 1;
+
+		this.seed = new JLabel(""+unknownValueChar);
+		settingsGrid.add(this.seed, c);
 
 		this.settingsPanel.add(settingsGrid);
 
@@ -118,6 +132,10 @@ public class MazeDrawer {
 		this.settingsPanel.add(btnGenerate);
 
 		this.container.add(settingsPanel);
+	}
+	
+	public void setSeedValue(long seed) {
+		this.seed.setText("" + seed);
 	}
 	
 	/**
@@ -215,6 +233,20 @@ public class MazeDrawer {
 		int actualHeightInBlocks = heightInBlocks*2-1 + 2;
 		int height = actualHeightInBlocks*blocksize; // height in pixels
 		return height;
+	}
+	
+	/**
+	 * Deactivates the button to generate mazes.
+	 */
+	public void deactivateGenerationBtn() {
+		btnGenerate.setEnabled(false);
+	}
+	
+	/**
+	 * Activates the button to generate mazes.
+	 */
+	public void activateGenerationBtn() {
+		btnGenerate.setEnabled(true);
 	}
 	
 	/**

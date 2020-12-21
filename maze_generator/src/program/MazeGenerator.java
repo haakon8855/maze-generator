@@ -78,6 +78,8 @@ public class MazeGenerator {
 	 */
 	public void generate(SwingWorkerGenerate worker) {
 		makeNewGenerator();
+		drawer.deactivateGenerationBtn();
+		drawer.setSeedValue(gen.getSeed());
 		if (gen != null) {
 			long startTime = 0;
 			long endTime = 0;
@@ -92,6 +94,7 @@ public class MazeGenerator {
 				System.out.println("Time: " + elapsed + "ms");
 			}
 			drawer.updateMaze(gen.getMaze());
+			drawer.activateGenerationBtn();
 		}
 	}
 
