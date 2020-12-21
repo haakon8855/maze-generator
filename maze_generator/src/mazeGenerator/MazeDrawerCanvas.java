@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 public class MazeDrawerCanvas extends JPanel { 
+
+	public static final Color wallColor = Color.BLACK;
 	private static final long serialVersionUID = 1L;
 	private int[][] bitmap;
 	private int blocksize = 5;

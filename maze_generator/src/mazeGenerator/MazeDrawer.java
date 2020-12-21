@@ -1,16 +1,15 @@
 package mazeGenerator;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -76,6 +75,9 @@ public class MazeDrawer {
 
 		// Initialize the necessary action listeners for the UI-elements
 		this.addActionListeners();
+		
+		// Set blank canvas
+		clearCanvas();
 	}
 	
 	/**
@@ -249,6 +251,18 @@ public class MazeDrawer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Clears the canvas and sets it to the wall-color
+	 */
+	public void clearCanvas() {
+		int val = 1;
+		int[] col = new int[height];
+		Arrays.fill(col, val);
+		int[][] bitmap = new int[width][height];
+		Arrays.fill(bitmap, col);
+		updateMaze(bitmap);
 	}
 	
 	/**
