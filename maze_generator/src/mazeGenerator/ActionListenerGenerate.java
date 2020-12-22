@@ -3,6 +3,7 @@ package mazeGenerator;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.SwingWorker;
 
 import program.MazeGenerator;
@@ -11,6 +12,7 @@ public class ActionListenerGenerate implements ActionListener {
 	
 	private MazeDrawer drawer;
 	private MazeGenerator generator;
+	private SwingWorkerGenerate worker;
 
 	/**
 	 * Creates an action listener for the generate-button and starts the 
@@ -29,9 +31,18 @@ public class ActionListenerGenerate implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		drawer.submitSeed();
-		SwingWorker<Integer, int[][]> mazeGenWorker = new SwingWorkerGenerate(drawer, generator);
-		mazeGenWorker.execute();	// Start the maze generation
+		String command = ((JButton) e.getSource()).getActionCommand();
+		if (command.equals("start")) {
+			drawer.submitSeed();
+			this.worker = new SwingWorkerGenerate(drawer, generator);
+			this.worker.execute();	// Start the maze generation
+		} else if (command.equals("stop")) {
+			if (this.worker != null) {
+				this.worker.cancel(true);
+				this.worker = null;
+			}
+			drawer.activateGenerationBtn();
+		}
 	}
 	
 }

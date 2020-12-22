@@ -96,7 +96,7 @@ public class MazeGenerator {
 	 * Generates the maze itself, can be called multiple times to create new.
 	 * @param worker of SwingWorker type to run maze generation on separate thread.
 	 */
-	public void generate(SwingWorkerGenerate worker) {
+	public void generate(SwingWorkerGenerate worker) throws InterruptedException {
 		makeNewGenerator();
 		drawer.deactivateGenerationBtn();
 		drawer.setSeedValue(gen.getSeed());

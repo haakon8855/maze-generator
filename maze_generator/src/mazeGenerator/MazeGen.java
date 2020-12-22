@@ -56,7 +56,7 @@ public abstract class MazeGen {
 	/**
 	 * Generates a maze with just walls
 	 */
-	public void generate(SwingWorkerGenerate worker) {
+	public void generate(SwingWorkerGenerate worker) throws InterruptedException {
 		long start = System.currentTimeMillis();
 
 		setAllWalls();
@@ -135,7 +135,7 @@ public abstract class MazeGen {
 	 * Is called when the maze is changed and needs updating.
 	 * Delays and then updates the drawn maze.
 	 */
-	public void mazeChanged(SwingWorkerGenerate worker) {
+	public void mazeChanged(SwingWorkerGenerate worker) throws InterruptedException {
 		if (animate) {
 			worker.update(maze);
 			delay();
@@ -146,12 +146,8 @@ public abstract class MazeGen {
 	 * Pauses execution for the delay duration 
 	 * specified in the delayDuration variable
 	 */
-	public void delay() {
-		try {
-			Thread.sleep(animationDelay);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public void delay() throws InterruptedException {
+		Thread.sleep(animationDelay);
 	}
 	
 	/**

@@ -61,7 +61,7 @@ public class MazeGenPrim extends MazeGen {
 	 * Generates a maze using the randomized Prim's algorithm
 	 */
 	@Override
-	public void generate(SwingWorkerGenerate worker) {
+	public void generate(SwingWorkerGenerate worker) throws InterruptedException {
 		super.generate(worker);
 		startTimer();
 		Node startNode = new Node(startX, startY);

@@ -60,7 +60,7 @@ public class MazeGenDFS extends MazeGen {
 	 * Generates a maze with randomized-DFS
 	 */
 	@Override
-	public void generate(SwingWorkerGenerate worker) {
+	public void generate(SwingWorkerGenerate worker) throws InterruptedException {
 		super.generate(worker);
 		startTimer();
 		int startX = maze.getWidth()/2;

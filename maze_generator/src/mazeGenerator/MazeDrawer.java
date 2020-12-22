@@ -168,9 +168,12 @@ public class MazeDrawer {
 		JPanel controlPanel = new JPanel();
 		this.btnGenerate = new JButton("Generate!");
 		this.btnGenerate.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.btnGenerate.setActionCommand("start");
 		controlPanel.add(btnGenerate);
 		this.btnAbort = new JButton("Abort");
 		this.btnAbort.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.btnAbort.setActionCommand("stop");
+		this.btnAbort.setEnabled(false);
 		controlPanel.add(btnAbort);
 		this.settingsPanel.add(controlPanel);
 
@@ -329,6 +332,7 @@ public class MazeDrawer {
 	 */
 	public void deactivateGenerationBtn() {
 		btnGenerate.setEnabled(false);
+		btnAbort.setEnabled(true);
 	}
 	
 	/**
@@ -336,13 +340,16 @@ public class MazeDrawer {
 	 */
 	public void activateGenerationBtn() {
 		btnGenerate.setEnabled(true);
+		btnAbort.setEnabled(false);
 	}
 	
 	/**
 	 * Adds the appropriate action listeners for each UI element
 	 */
 	public void addActionListeners() {
-		btnGenerate.addActionListener(new ActionListenerGenerate(this, generator));
+		ActionListenerGenerate alg = new ActionListenerGenerate(this, generator);
+		btnGenerate.addActionListener(alg);
+		btnAbort.addActionListener(alg);
 		randomCheckBox.addActionListener(new ActionListener() {
 			
 			@Override

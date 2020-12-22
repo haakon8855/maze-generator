@@ -30,7 +30,12 @@ public class SwingWorkerGenerate extends SwingWorker<Integer, int[][]> {
 	 * that it runs on a different thread than the UI itself.
 	 */
 	protected Integer doInBackground() throws Exception {
-		generator.generate(this);
+		try {
+			generator.generate(this);
+		} catch (Exception e) {
+			this.cancel(true);
+			return -1;
+		}
 		return 0;
 	}
 	
