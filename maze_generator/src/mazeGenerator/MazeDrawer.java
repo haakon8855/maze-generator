@@ -9,14 +9,20 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Arrays;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.text.NumberFormatter;
 
 import datatypes.Maze;
 import datatypes.Node;
@@ -25,7 +31,7 @@ import program.MazeGenerator;
 
 public class MazeDrawer {
 	
-	public static final String unknownValueChar = "-                 ";
+	public static final String unknownValueChar = "-";
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -33,7 +39,8 @@ public class MazeDrawer {
 	private JPanel settingsPanel;
 	private MazeDrawerCanvas canvas;
 	private JButton btnGenerate;
-	private JLabel seed;
+	private JFormattedTextField seed;
+	private JCheckBox randomCheckBox;
 	
 	private MazeGenerator generator;
 	
@@ -121,9 +128,24 @@ public class MazeDrawer {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 1;
-
-		this.seed = new JLabel(""+unknownValueChar);
+		NumberFormatter formatter = makeLongFormatter();
+		this.seed = new JFormattedTextField(formatter);
+		this.seed.setColumns(18);
+		this.seed.setMinimumSize(new Dimension(170, 20));
+		this.seed.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.seed.setVisible(true);
 		settingsGrid.add(this.seed, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 2;
+		settingsGrid.add(new JLabel("Use random seed"), c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 2;
+		this.randomCheckBox = new JCheckBox();
+		settingsGrid.add(this.randomCheckBox, c);
 
 		this.settingsPanel.add(settingsGrid);
 
@@ -134,7 +156,54 @@ public class MazeDrawer {
 		this.container.add(settingsPanel);
 	}
 	
+	/**
+	 * Makes the numberformatter used to keep only digits in the seed text input field.
+	 * Also adds a special case to allow an empty textbox. 
+	 * @return
+	 */
+	public NumberFormatter makeLongFormatter() {
+		NumberFormat format = NumberFormat.getInstance();
+		format.setGroupingUsed(false);
+		NumberFormatter formatter = new NumberFormatter(format) {
+			private static final long serialVersionUID = -3632582082611336565L;
+
+			public Object stringToValue(String string) throws ParseException {
+				if (string == null || string.length() == 0 || string.equals("-")) {
+					return null;
+				}
+				return super.stringToValue(string);
+			}
+		};
+		formatter.setMinimum(Long.MIN_VALUE);
+		formatter.setMaximum(Long.MAX_VALUE);
+		formatter.setAllowsInvalid(false);
+		formatter.setCommitsOnValidEdit(true);
+		return formatter;
+	}
+	
+	/**
+	 * Sends the seed in the seed input field to the generator if the checkbox for random seed
+	 * is not ticked.
+	 */
+	public void submitSeed() {
+		long seed = 0;
+		Object rawSeedVal = this.seed.getValue();
+		if (rawSeedVal != null) {
+			seed = (long) rawSeedVal;
+		}
+		if (randomCheckBox.isSelected()) {
+			seed = 0;
+		}
+		generator.setSeed(seed);
+	}
+	
+	/**
+	 * Sets the value in the seed input field.
+	 * @param seed
+	 */
 	public void setSeedValue(long seed) {
+		System.out.println(seed);
+		this.seed.setText("");
 		this.seed.setText("" + seed);
 	}
 	
@@ -254,6 +323,17 @@ public class MazeDrawer {
 	 */
 	public void addActionListeners() {
 		btnGenerate.addActionListener(new ActionListenerGenerate(this, generator));
+		randomCheckBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (randomCheckBox.isSelected()) {
+					seed.setEditable(false);
+				} else {
+					seed.setEditable(true);
+				}
+			}
+		});
 	}
 	
 	/**

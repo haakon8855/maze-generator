@@ -43,10 +43,26 @@ public class MazeGenerator {
 		this.drawer = new MazeDrawer(width, height, animationDelay, this);
 	}
 	
+	/**
+	 * Gets the currently selected maze type
+	 * @return String representing the currently selected type
+	 */
 	public String getMazeType() {
 		return mazeType;
 	}
 	
+	/**
+	 * Sets the seed to use for next generation
+	 * @param seed
+	 */
+	public void setSeed(long seed) {
+		this.seed = seed;
+	}
+	
+	/**
+	 * Sets the maze type
+	 * @param String mazeType representing the currently selected type
+	 */
 	public void setMazeType(String mazeType) {
 		this.mazeType = mazeType;
 	}

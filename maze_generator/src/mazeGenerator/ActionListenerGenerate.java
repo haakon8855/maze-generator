@@ -29,6 +29,7 @@ public class ActionListenerGenerate implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
+		drawer.submitSeed();
 		SwingWorker<Integer, int[][]> mazeGenWorker = new SwingWorkerGenerate(drawer, generator);
 		mazeGenWorker.execute();	// Start the maze generation
 	}
