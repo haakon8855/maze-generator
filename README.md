@@ -1,7 +1,7 @@
 # Maze Generator
 A maze generator written in Java, generating mazes of custom size.
-The size and maze type can be set in the config file. The maze size
-will automatically scale to fit the screen size.
+Maze type and seed settings can be set in the GUI, while the maze size has to be set in the config
+file. The maze size will automatically scale to fit the screen size.
 
 There are currently only two maze generation algorithms implemented, both of which
 are randomized versions of graph algorithms, specifically Depth First Search and Prim's algorithm.
@@ -13,16 +13,12 @@ messier-looking maze, but one which seems to be more difficult to traverse than 
 To run this program, you could clone this project to a Java IDE, such as Eclipse or IntelliJ
 and run the main class maze_generator.program.MazeGenerator.java.
 
-If you wish to run this code elsewhere, such as in your own main method or class, simply import the
-class `maze_generator.program.MazeGenerator`, then run
-
-```java
-MazeGenerator.run();
-```
-
 # Configuration
-The configuration file, config.conf, can be used to customize the output of the Maze Generator.
-Currently, you can modify the width, height, seed, animation settings, timer settings and maze type here.
+Most settings can be changed in the application's GUI. Some settings, however, can only be edited 
+int the configuration file, config.conf. This file can also be used to change the default settings
+when starting the application.
+Currently, you can modify the width, height, seed, animation settings, timer settings and maze type
+here. Below is an explanation of how to change these in the config file.
 
 ### Width and height
 Changing the maze dimensions, will cause the maze to have more 'rooms' and hallways, and it
