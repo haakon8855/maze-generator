@@ -52,6 +52,14 @@ public class MazeGenerator {
 	}
 	
 	/**
+	 * Sets the maze type
+	 * @param String mazeType representing the currently selected type
+	 */
+	public void setMazeType(String mazeType) {
+		this.mazeType = mazeType;
+	}
+	
+	/**
 	 * Sets the seed to use for next generation
 	 * @param seed
 	 */
@@ -59,12 +67,8 @@ public class MazeGenerator {
 		this.seed = seed;
 	}
 	
-	/**
-	 * Sets the maze type
-	 * @param String mazeType representing the currently selected type
-	 */
-	public void setMazeType(String mazeType) {
-		this.mazeType = mazeType;
+	public void setAnimation(boolean showAnimations) {
+		this.animate = showAnimations;
 	}
 
 	/**

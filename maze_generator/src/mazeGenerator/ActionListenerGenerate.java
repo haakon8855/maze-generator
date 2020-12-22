@@ -28,7 +28,7 @@ public class ActionListenerGenerate implements ActionListener {
 	 * EDT. This keeps the UI from freezing when the maze is being generated.
 	 */
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent e) {
 		drawer.submitSeed();
 		SwingWorker<Integer, int[][]> mazeGenWorker = new SwingWorkerGenerate(drawer, generator);
 		mazeGenWorker.execute();	// Start the maze generation

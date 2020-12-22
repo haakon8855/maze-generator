@@ -39,8 +39,10 @@ public class MazeDrawer {
 	private JPanel settingsPanel;
 	private MazeDrawerCanvas canvas;
 	private JButton btnGenerate;
+	private JButton btnAbort;
 	private JFormattedTextField seed;
 	private JCheckBox randomCheckBox;
+	private JCheckBox animationCheckBox;
 	
 	private MazeGenerator generator;
 	
@@ -87,6 +89,9 @@ public class MazeDrawer {
 		
 		// Set blank canvas
 		clearCanvas();
+		this.randomCheckBox.setSelected(true);
+		this.seed.setEditable(false);
+		this.animationCheckBox.setSelected(true);
 	}
 	
 	/**
@@ -146,12 +151,28 @@ public class MazeDrawer {
 		c.gridy = 2;
 		this.randomCheckBox = new JCheckBox();
 		settingsGrid.add(this.randomCheckBox, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 3;
+		settingsGrid.add(new JLabel("Show animation"), c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 3;
+		this.animationCheckBox = new JCheckBox();
+		settingsGrid.add(this.animationCheckBox, c);
 
 		this.settingsPanel.add(settingsGrid);
 
+		JPanel controlPanel = new JPanel();
 		this.btnGenerate = new JButton("Generate!");
 		this.btnGenerate.setAlignmentX(Component.CENTER_ALIGNMENT);
-		this.settingsPanel.add(btnGenerate);
+		controlPanel.add(btnGenerate);
+		this.btnAbort = new JButton("Abort");
+		this.btnAbort.setAlignmentX(Component.CENTER_ALIGNMENT);
+		controlPanel.add(btnAbort);
+		this.settingsPanel.add(controlPanel);
 
 		this.container.add(settingsPanel);
 	}
@@ -202,7 +223,6 @@ public class MazeDrawer {
 	 * @param seed
 	 */
 	public void setSeedValue(long seed) {
-		System.out.println(seed);
 		this.seed.setText("");
 		this.seed.setText("" + seed);
 	}
@@ -331,6 +351,17 @@ public class MazeDrawer {
 					seed.setEditable(false);
 				} else {
 					seed.setEditable(true);
+				}
+			}
+		});
+		animationCheckBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (animationCheckBox.isSelected()) {
+					generator.setAnimation(true);
+				} else {
+					generator.setAnimation(false);
 				}
 			}
 		});
