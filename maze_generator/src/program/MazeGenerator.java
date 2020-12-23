@@ -23,13 +23,7 @@ public class MazeGenerator {
 
 		this.width = cfg.getPositiveInteger("width");
 		this.height = cfg.getPositiveInteger("height");
-		if (width < 5 || height < 5) {
-			width = 5;
-			height = 5;
-		}
-		if (height/width >= 3) {
-			height = 2*width;
-		}
+		setDimensions(width, height);
 
 		this.mazeType = cfg.get("type").toLowerCase();
 
@@ -41,6 +35,25 @@ public class MazeGenerator {
 		this.seed = cfg.getLong("seed");
 
 		this.drawer = new MazeDrawer(width, height, animationDelay, this);
+		this.drawer.setWidthValue(width);
+		this.drawer.setHeightValue(height);
+	}
+	
+	public void setDimensions(int width, int height) {
+		width = Math.max(5, width);
+		height = Math.max(5, height);
+		width = Math.min(width, 3*height);
+		height = Math.min(height, 3*width);
+		this.width = width;
+		this.height = height;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
 	}
 	
 	/**

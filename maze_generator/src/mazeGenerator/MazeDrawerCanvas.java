@@ -39,6 +39,10 @@ public class MazeDrawerCanvas extends JPanel {
 		return blocksize;
 	}
 	
+	public void setBlocksize(int blocksize) {
+		this.blocksize = blocksize;
+	}
+	
 	/**
 	 * Fetches the wallwidth and returns it.
 	 * @return wallwidth int indicating the width of the walls.
@@ -47,6 +51,10 @@ public class MazeDrawerCanvas extends JPanel {
 		return wallWidth;
 	}
 	
+	public void setWallWidth(int wallWidth) {
+		this.wallWidth = wallWidth;
+	}
+
 	/**
 	 * Sets the bitmap which is to be drawn by the maze.
 	 * @param bitmap of type int[][] representing the maze.

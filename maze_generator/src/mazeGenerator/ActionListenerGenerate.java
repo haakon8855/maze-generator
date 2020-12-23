@@ -32,6 +32,7 @@ public class ActionListenerGenerate implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String command = ((JButton) e.getSource()).getActionCommand();
 		if (command.equals("start")) {
+			drawer.submitDimensions();
 			drawer.submitSeed();
 			this.worker = new SwingWorkerGenerate(drawer, generator);
 			this.worker.execute();	// Start the maze generation

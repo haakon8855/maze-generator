@@ -31,7 +31,8 @@ import program.MazeGenerator;
 
 public class MazeDrawer {
 	
-	public static final int maxDimension = 1000;
+	public static final int maxDimension = 200;
+	public static final int settingsWidth = 350;
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -55,12 +56,26 @@ public class MazeDrawer {
 	 */
 	public MazeDrawer(int widthInBlocks, int heightInBlocks, int animationDelay, 
 														MazeGenerator generator) {
+		this.animationDelay = animationDelay;
+		this.generator = generator;
+
+		// Initialize main window
+		init(widthInBlocks, heightInBlocks);
+		
+		this.randomCheckBox.setSelected(true);
+		this.seed.setEditable(false);
+		this.animationCheckBox.setSelected(true);
+		this.btnAbort.setEnabled(false);
+	}
+	
+	private void init(int widthInBlocks, int heightInBlocks) {
+		if (this.frame != null) {
+			this.frame.setVisible(false);
+			this.frame.dispose();
+		}
 		// Set up main JFrame
 		this.frame = new JFrame("Håkon's Maze Generator");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		this.animationDelay = animationDelay;
-		this.generator = generator;
 		
 		// Calculate some needed values
 		int blocksize = calculateBlocksize(widthInBlocks, heightInBlocks);
@@ -86,14 +101,23 @@ public class MazeDrawer {
 		this.frame.setResizable(false);
 		this.frame.setVisible(true);
 
-		// Initialize the necessary action listeners for the UI-elements
-		this.addActionListeners();
-		
 		// Set blank canvas
 		clearCanvas();
-		this.randomCheckBox.setSelected(true);
-		this.seed.setEditable(false);
-		this.animationCheckBox.setSelected(true);
+
+		// Initialize the necessary action listeners for the UI-elements
+		this.addActionListeners();
+	}
+	
+	private void resize(int blocksize, int wallWidth) {
+		this.canvas.setSize(width, height);
+		this.canvas.setPreferredSize(new Dimension(width, height));
+		this.canvas.setBlocksize(blocksize);
+		this.canvas.setWallWidth(wallWidth);
+		this.settingsPanel.setSize(settingsWidth, height);
+		this.settingsPanel.setPreferredSize(new Dimension(settingsWidth, height));
+		this.frame.pack();
+		clearCanvas();
+		centerScreen();
 	}
 	
 	/**
@@ -103,7 +127,7 @@ public class MazeDrawer {
 		this.settingsPanel = new JPanel();
 		this.settingsPanel.setLayout(new BoxLayout(this.settingsPanel, BoxLayout.Y_AXIS));
 		// temprorary size
-		Dimension settingsDim = new Dimension(350, height);
+		Dimension settingsDim = new Dimension(settingsWidth, height);
 		this.settingsPanel.setSize(settingsDim);
 		this.settingsPanel.setPreferredSize(settingsDim);
 		
@@ -163,8 +187,7 @@ public class MazeDrawer {
 		// Width input box
 		c.gridx = 1;
 		c.gridy = line;
-		NumberFormatter formatter = makeDimensionFormatter();
-		this.widthInput = new JFormattedTextField(formatter);
+		this.widthInput = new JFormattedTextField(makeDimensionFormatter());
 		this.widthInput.setColumns(18);
 		this.widthInput.setMinimumSize(new Dimension(170, 20));
 		this.widthInput.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -180,7 +203,7 @@ public class MazeDrawer {
 		// Height input box
 		c.gridx = 1;
 		c.gridy = line;
-		this.heightInput = new JFormattedTextField(formatter);
+		this.heightInput = new JFormattedTextField(makeDimensionFormatter());
 		this.heightInput.setColumns(18);
 		this.heightInput.setMinimumSize(new Dimension(170, 20));
 		this.heightInput.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -264,7 +287,6 @@ public class MazeDrawer {
 		this.btnAbort = new JButton("Abort");
 		this.btnAbort.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.btnAbort.setActionCommand("stop");
-		this.btnAbort.setEnabled(false);
 		controlPanel.add(btnAbort);
 		this.settingsPanel.add(controlPanel);
 	}
@@ -282,19 +304,23 @@ public class MazeDrawer {
 	
 	/**
 	 * Makes the numberformatter used to keep only digits in the width and height input fields.
-	 * @return
+	 * @return numberformatter which formats numbers for dimensions
 	 */
 	public NumberFormatter makeDimensionFormatter() {
 		NumberFormat format = NumberFormat.getInstance();
 		format.setGroupingUsed(false);
 		NumberFormatter formatter = new NumberFormatter(format) {
 			private static final long serialVersionUID = -3632582082611336565L;
-
 			public Object stringToValue(String string) throws ParseException {
 				if (string == null || string.length() == 0) {
 					return null;
 				}
-				return super.stringToValue(string);
+				Object value = super.stringToValue(string);
+				int intValue = (Integer) value;
+				if (intValue > maxDimension) {
+					intValue = maxDimension;
+				}
+				return super.stringToValue("" + intValue);
 			}
 		};
 		formatter.setValueClass(Integer.class);
@@ -331,6 +357,46 @@ public class MazeDrawer {
 	}
 	
 	/**
+	 * Sends the dimensions (width and height) to the generator
+	 */
+	public void submitDimensions() {
+		int widthInBlocks = 20;
+		int heightInBlocks = 20;
+		Object widthVal = this.widthInput.getValue();
+		Object heightVal = this.heightInput.getValue();
+		if (widthVal != null) {
+			widthInBlocks = (int) widthVal;
+		}
+		if (heightVal != null) {
+			heightInBlocks = (int) heightVal;
+		}
+
+		int oldWidthInBlocks = generator.getWidth();
+		int oldHeightInBlocks = generator.getHeight();
+		generator.setDimensions(widthInBlocks, heightInBlocks);
+		int newWidthInBlocks = generator.getWidth();
+		int newHeightInBlocks = generator.getHeight();
+		if (newWidthInBlocks != widthInBlocks) {
+			widthInBlocks = newWidthInBlocks;
+		}
+		if (newHeightInBlocks != heightInBlocks) {
+			heightInBlocks = newHeightInBlocks;
+		}
+		boolean dimChanged = true;
+		if (oldWidthInBlocks == newWidthInBlocks && oldHeightInBlocks == newHeightInBlocks) {
+			dimChanged = false;
+		}
+		this.widthInput.setValue(widthInBlocks);
+		this.heightInput.setValue(heightInBlocks);
+		if (dimChanged) {
+			int blocksize = calculateBlocksize(widthInBlocks, heightInBlocks);
+			this.width = calculateWidth(widthInBlocks, blocksize);	// width in pixels
+			this.height = calculateHeight(heightInBlocks, blocksize); // height in pixels
+			resize(blocksize, blocksize);
+		}
+	}
+	
+	/**
 	 * Sends the seed in the seed input field to the generator if the checkbox for random seed
 	 * is not ticked.
 	 */
@@ -344,6 +410,24 @@ public class MazeDrawer {
 			seed = 0;
 		}
 		generator.setSeed(seed);
+	}
+	
+	/**
+	 * Sets the value in the width input box
+	 * @param width
+	 */
+	public void setWidthValue(int width) {
+		this.widthInput.setText("");
+		this.widthInput.setText("" + width);
+	}
+	
+	/**
+	 * Sets the value in the height input box
+	 * @param height
+	 */
+	public void setHeightValue(int height) {
+		this.heightInput.setText("");
+		this.heightInput.setText("" + height);
 	}
 	
 	/**
@@ -398,8 +482,10 @@ public class MazeDrawer {
 		// Dimensions of users screen
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+		int windowWidth = this.width + settingsWidth;
+		int windowHeight = this.height;
 		// sets location to center of screen
-		this.frame.setLocation((screenWidth-this.width)/2, (screenHeight-this.height)/2);
+		this.frame.setLocation((screenWidth-windowWidth)/2, (screenHeight-windowHeight)/2);
 	}
 	
 	/**
