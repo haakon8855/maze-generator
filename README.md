@@ -10,8 +10,22 @@ not particularly difficult to solve. On the other hand, Prim's algorithm creates
 messier-looking maze, but one which seems to be more difficult to traverse than the DFS mazes.
 
 # Usage
-To run this program, you could clone this project to a Java IDE, such as Eclipse or IntelliJ
-and run the main class maze_generator.program.MazeGenerator.java.
+To run this program, you can download the runnable .jar file or clone this project to a Java IDE
+
+### Download 
+First download the [jar](https://github.com/haakon8855/maze_generator/releases), then execute the 
+program by running `java -jar haakons_maze_generator_vX.X.jar`.
+This application has only been tested on JDK 11, and I can not guarantee any success on any other
+version of Java, although any JDK above version 11 should be perfectly fine. 
+
+### Clone
+Simply clone the project to a Java IDE such as Eclipse or IntelliJ and run the main class 
+maze_generator.program.MazeGenerator.java clone the project and compile and run manually. If you opt
+for the latter, i'm sure you know what you're doing, just run the main class program.MazeGenerator
+in the maze_generator module. 
+
+# Requirements
+- JDK 11 or higher
 
 # Configuration
 Most settings can be changed in the application's GUI. Some settings, however, can only be edited 
