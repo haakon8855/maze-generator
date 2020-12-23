@@ -31,7 +31,6 @@ import program.MazeGenerator;
 
 public class MazeDrawer {
 	
-	public static final String unknownValueChar = "-";
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -106,31 +105,57 @@ public class MazeDrawer {
 		this.settingsPanel.setPreferredSize(settingsDim);
 		
 		JPanel settingsGrid = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
 
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.insets = new Insets(4, 10, 4, 10);
+		// Add settings components
+		addAlgortihmSelection(settingsGrid);
+		addSeedInput(settingsGrid);
+		addSeedCheckBox(settingsGrid);
+		addUseAnimation(settingsGrid);
+
+		this.settingsPanel.add(settingsGrid);
+
+		addControlPanel(settingsGrid);
+
+		this.container.add(settingsPanel);
+	}
+	
+	/**
+	 * Add the option to select the algorithm used for maze generation. A dropdown list of 
+	 * algorithms.
+	 * @param settingsGrid
+	 */
+	private void addAlgortihmSelection(JPanel settingsGrid) {
+		// Contstraints
+		GridBagConstraints c = getDetfaultConstraints();
+		// Algorithm selection label
 		c.gridx = 0;
 		c.gridy = 0;
 		settingsGrid.add(new JLabel("Generation Algorithm:"), c);
-		
+		// Algorithm selection dropdown menu (JComboBox)
 		String[] algorithms = {"DFS", "Prim"};
 		JComboBox<String> cbAlgorithms = new JComboBox<String>(algorithms);
 		int selectedIndex = getSelectedMazeTypeIndex(algorithms);
 		cbAlgorithms.setSelectedIndex(selectedIndex);
-		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 1;
 		c.gridy = 0;
 		addCbAlgorithmsActionListener(cbAlgorithms);
 		settingsGrid.add(cbAlgorithms, c);
 		settingsGrid.setAlignmentY(Component.TOP_ALIGNMENT);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
+	}
+	
+	/**
+	 * Add the input field for seed selection to the UI.
+	 * This field is also used to show the randomly generated seed in order to save seeds.
+	 * @param settingsGrid
+	 */
+	private void addSeedInput(JPanel settingsGrid) {
+		// Contstraints
+		GridBagConstraints c = getDetfaultConstraints();
+		// Seed input field label
 		c.gridx = 0;
 		c.gridy = 1;
 		settingsGrid.add(new JLabel("Seed: "), c);
-
-		c.fill = GridBagConstraints.HORIZONTAL;
+		// Seed input
 		c.gridx = 1;
 		c.gridy = 1;
 		NumberFormatter formatter = makeLongFormatter();
@@ -140,31 +165,49 @@ public class MazeDrawer {
 		this.seed.setHorizontalAlignment(SwingConstants.RIGHT);
 		this.seed.setVisible(true);
 		settingsGrid.add(this.seed, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
+	}
+	
+	/**
+	 * Add the option to use random or custom seed to the UI
+	 * @param settingsGrid
+	 */
+	private void addSeedCheckBox(JPanel settingsGrid) {
+		// Contstraints
+		GridBagConstraints c = getDetfaultConstraints();
+		// Seed check box label
 		c.gridx = 0;
 		c.gridy = 2;
 		settingsGrid.add(new JLabel("Use random seed"), c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
+		// Seed check box
 		c.gridx = 1;
 		c.gridy = 2;
 		this.randomCheckBox = new JCheckBox();
 		settingsGrid.add(this.randomCheckBox, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
+	}
+	
+	/**
+	 * Add the option to use animations or not to the UI
+	 * @param settingsGrid
+	 */
+	private void addUseAnimation(JPanel settingsGrid) {
+		// Contstraints
+		GridBagConstraints c = getDetfaultConstraints();
+		// Use animation label
 		c.gridx = 0;
 		c.gridy = 3;
 		settingsGrid.add(new JLabel("Show animation"), c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
+		// Use animation checkbox
 		c.gridx = 1;
 		c.gridy = 3;
 		this.animationCheckBox = new JCheckBox();
 		settingsGrid.add(this.animationCheckBox, c);
-
-		this.settingsPanel.add(settingsGrid);
-
+	}
+	
+	/**
+	 * Add the control panel with start and stop buttons to the UI
+	 * @param settingsPanel
+	 */
+	private void addControlPanel(JPanel settingsPanel) {
 		JPanel controlPanel = new JPanel();
 		this.btnGenerate = new JButton("Generate!");
 		this.btnGenerate.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -176,8 +219,17 @@ public class MazeDrawer {
 		this.btnAbort.setEnabled(false);
 		controlPanel.add(btnAbort);
 		this.settingsPanel.add(controlPanel);
-
-		this.container.add(settingsPanel);
+	}
+	
+	/**
+	 * Generates a default GridBagConstraints for use when adding elements to the UI
+	 * @return GridBagConstraints constraint
+	 */
+	private GridBagConstraints getDetfaultConstraints() {
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(4, 10, 4, 10);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		return c;
 	}
 	
 	/**
