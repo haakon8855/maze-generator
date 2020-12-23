@@ -31,6 +31,7 @@ import program.MazeGenerator;
 
 public class MazeDrawer {
 	
+	public static final int maxDimension = 1000;
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -40,6 +41,8 @@ public class MazeDrawer {
 	private JButton btnGenerate;
 	private JButton btnAbort;
 	private JFormattedTextField seed;
+	private JFormattedTextField widthInput;
+	private JFormattedTextField heightInput;
 	private JCheckBox randomCheckBox;
 	private JCheckBox animationCheckBox;
 	
@@ -107,10 +110,11 @@ public class MazeDrawer {
 		JPanel settingsGrid = new JPanel(new GridBagLayout());
 
 		// Add settings components
-		addAlgortihmSelection(settingsGrid);
-		addSeedInput(settingsGrid);
-		addSeedCheckBox(settingsGrid);
-		addUseAnimation(settingsGrid);
+		addAlgortihmSelection(settingsGrid, 0);
+		addWidthHeightInput(settingsGrid, 1);
+		addSeedInput(settingsGrid, 3);
+		addSeedCheckBox(settingsGrid, 4);
+		addUseAnimation(settingsGrid, 5);
 
 		this.settingsPanel.add(settingsGrid);
 
@@ -123,13 +127,14 @@ public class MazeDrawer {
 	 * Add the option to select the algorithm used for maze generation. A dropdown list of 
 	 * algorithms.
 	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addAlgortihmSelection(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addAlgortihmSelection(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Algorithm selection label
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Generation Algorithm:"), c);
 		// Algorithm selection dropdown menu (JComboBox)
 		String[] algorithms = {"DFS", "Prim"};
@@ -137,27 +142,68 @@ public class MazeDrawer {
 		int selectedIndex = getSelectedMazeTypeIndex(algorithms);
 		cbAlgorithms.setSelectedIndex(selectedIndex);
 		c.gridx = 1;
-		c.gridy = 0;
+		c.gridy = line;
 		addCbAlgorithmsActionListener(cbAlgorithms);
 		settingsGrid.add(cbAlgorithms, c);
 		settingsGrid.setAlignmentY(Component.TOP_ALIGNMENT);
 	}
 	
 	/**
+	 * Add width and height input boxes
+	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
+	 */
+	private void addWidthHeightInput(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
+		// Width input label
+		c.gridx = 0;
+		c.gridy = line;
+		settingsGrid.add(new JLabel("Width: "), c);
+		// Width input box
+		c.gridx = 1;
+		c.gridy = line;
+		NumberFormatter formatter = makeDimensionFormatter();
+		this.widthInput = new JFormattedTextField(formatter);
+		this.widthInput.setColumns(18);
+		this.widthInput.setMinimumSize(new Dimension(170, 20));
+		this.widthInput.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.widthInput.setVisible(true);
+		settingsGrid.add(this.widthInput, c);
+		
+		// Height
+		line++;
+		// Height input label
+		c.gridx = 0;
+		c.gridy = line;
+		settingsGrid.add(new JLabel("Heigth: "), c);
+		// Height input box
+		c.gridx = 1;
+		c.gridy = line;
+		this.heightInput = new JFormattedTextField(formatter);
+		this.heightInput.setColumns(18);
+		this.heightInput.setMinimumSize(new Dimension(170, 20));
+		this.heightInput.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.heightInput.setVisible(true);
+		settingsGrid.add(this.heightInput, c);
+	}
+	
+	/**
 	 * Add the input field for seed selection to the UI.
 	 * This field is also used to show the randomly generated seed in order to save seeds.
-	 * @param settingsGrid
+	 * @param settingsGridd
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addSeedInput(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addSeedInput(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Seed input field label
 		c.gridx = 0;
-		c.gridy = 1;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Seed: "), c);
 		// Seed input
 		c.gridx = 1;
-		c.gridy = 1;
+		c.gridy = line;
 		NumberFormatter formatter = makeLongFormatter();
 		this.seed = new JFormattedTextField(formatter);
 		this.seed.setColumns(18);
@@ -170,17 +216,18 @@ public class MazeDrawer {
 	/**
 	 * Add the option to use random or custom seed to the UI
 	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addSeedCheckBox(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addSeedCheckBox(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Seed check box label
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Use random seed"), c);
 		// Seed check box
 		c.gridx = 1;
-		c.gridy = 2;
+		c.gridy = line;
 		this.randomCheckBox = new JCheckBox();
 		settingsGrid.add(this.randomCheckBox, c);
 	}
@@ -188,17 +235,18 @@ public class MazeDrawer {
 	/**
 	 * Add the option to use animations or not to the UI
 	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addUseAnimation(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addUseAnimation(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Use animation label
 		c.gridx = 0;
-		c.gridy = 3;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Show animation"), c);
 		// Use animation checkbox
 		c.gridx = 1;
-		c.gridy = 3;
+		c.gridy = line;
 		this.animationCheckBox = new JCheckBox();
 		settingsGrid.add(this.animationCheckBox, c);
 	}
@@ -225,11 +273,36 @@ public class MazeDrawer {
 	 * Generates a default GridBagConstraints for use when adding elements to the UI
 	 * @return GridBagConstraints constraint
 	 */
-	private GridBagConstraints getDetfaultConstraints() {
+	private GridBagConstraints getDefaultConstraints() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(4, 10, 4, 10);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		return c;
+	}
+	
+	/**
+	 * Makes the numberformatter used to keep only digits in the width and height input fields.
+	 * @return
+	 */
+	public NumberFormatter makeDimensionFormatter() {
+		NumberFormat format = NumberFormat.getInstance();
+		format.setGroupingUsed(false);
+		NumberFormatter formatter = new NumberFormatter(format) {
+			private static final long serialVersionUID = -3632582082611336565L;
+
+			public Object stringToValue(String string) throws ParseException {
+				if (string == null || string.length() == 0) {
+					return null;
+				}
+				return super.stringToValue(string);
+			}
+		};
+		formatter.setValueClass(Integer.class);
+		formatter.setMinimum(0);
+		formatter.setMaximum(maxDimension*10);
+		formatter.setAllowsInvalid(false);
+		formatter.setCommitsOnValidEdit(true);
+		return formatter;
 	}
 	
 	/**
@@ -403,7 +476,6 @@ public class MazeDrawer {
 		btnGenerate.addActionListener(alg);
 		btnAbort.addActionListener(alg);
 		randomCheckBox.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (randomCheckBox.isSelected()) {
@@ -414,7 +486,6 @@ public class MazeDrawer {
 			}
 		});
 		animationCheckBox.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (animationCheckBox.isSelected()) {
@@ -432,11 +503,9 @@ public class MazeDrawer {
 	 */
 	public void addCbAlgorithmsActionListener(JComboBox<String> cbAlgorithms) {
 		ActionListener cbActionListener = new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String selectedItem = (String) cbAlgorithms.getSelectedItem();
-				System.out.println("Selected: " + selectedItem);
 				generator.setMazeType(selectedItem.toLowerCase());
 			}
 		};
