@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -61,7 +62,7 @@ public class MazeDrawer {
 
 		// Initialize main window
 		init(widthInBlocks, heightInBlocks);
-		
+
 		this.randomCheckBox.setSelected(true);
 		this.seed.setEditable(false);
 		this.animationCheckBox.setSelected(true);
@@ -94,6 +95,9 @@ public class MazeDrawer {
 		
 		// Initialize the settings panel
 		initSettingsPanel();
+		
+		// Set application icon
+		setIcon("icon32x32.png");
 
 		// Finally, add the main container JPanel to the frame
 		this.frame.add(this.container);
@@ -106,6 +110,12 @@ public class MazeDrawer {
 
 		// Initialize the necessary action listeners for the UI-elements
 		this.addActionListeners();
+	}
+	
+	private void setIcon(String path) {
+		Image icon = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource(path));
+		System.out.println(icon.toString());
+		this.frame.setIconImage(icon);
 	}
 	
 	private void resize(int blocksize, int wallWidth) {
