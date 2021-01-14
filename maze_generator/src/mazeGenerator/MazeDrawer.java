@@ -359,7 +359,6 @@ public class MazeDrawer {
 				return super.stringToValue(string);
 			}
 		};
-		formatter.setValueClass(Long.class);
 		formatter.setMinimum(Long.MIN_VALUE);
 		formatter.setMaximum(Long.MAX_VALUE);
 		formatter.setAllowsInvalid(false);
