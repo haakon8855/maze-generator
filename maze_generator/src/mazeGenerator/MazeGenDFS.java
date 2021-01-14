@@ -28,7 +28,7 @@ public class MazeGenDFS extends MazeGen {
 	public MazeGenDFS(int width, int height, MazeDrawer drawer,
 					  boolean animate, int animationDelay) {
 		super(width, height, drawer, animate, animationDelay);
-		seed = rnd.nextLong();
+		generateNewSeed(rnd);
 		rnd.setSeed(seed);
 	}
 	

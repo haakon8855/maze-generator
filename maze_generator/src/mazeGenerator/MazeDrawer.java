@@ -114,7 +114,6 @@ public class MazeDrawer {
 	
 	private void setIcon(String path) {
 		Image icon = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource(path));
-		System.out.println(icon.toString());
 		this.frame.setIconImage(icon);
 	}
 	
@@ -446,7 +445,6 @@ public class MazeDrawer {
 	 */
 	public void setSeedValue(long seed) {
 		this.seed.setText("");
-		System.out.println(seed);
 		this.seed.setText("" + seed);
 	}
 	
