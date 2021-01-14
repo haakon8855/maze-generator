@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -22,7 +24,9 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.text.NumberFormatter;
 
 import datatypes.Maze;
@@ -588,6 +592,28 @@ public class MazeDrawer {
 				} else {
 					generator.setAnimation(false);
 				}
+			}
+		});
+		addSelectAllOnFocusActionListener(seed);
+		addSelectAllOnFocusActionListener(widthInput);
+		addSelectAllOnFocusActionListener(heightInput);
+	}
+	
+	public void addSelectAllOnFocusActionListener(JTextField field) {
+		field.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				field.select(0, 0);
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						field.selectAll();
+					}
+				});
 			}
 		});
 	}
