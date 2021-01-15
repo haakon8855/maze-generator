@@ -39,6 +39,11 @@ public class MazeGenerator {
 		this.drawer.setHeightValue(height);
 	}
 	
+	/**
+	 * Set the maze dimensions
+	 * @param width in blocks
+	 * @param height in blocks
+	 */
 	public void setDimensions(int width, int height) {
 		width = Math.max(5, width);
 		height = Math.max(5, height);
@@ -48,10 +53,18 @@ public class MazeGenerator {
 		this.height = height;
 	}
 	
+	/**
+	 * Getter for maze Width
+	 * @return Width of the maze in blocks
+	 */
 	public int getWidth() {
 		return width;
 	}
 	
+	/**
+	 * Getter for maze height
+	 * @return Height of the maze in blocks
+	 */
 	public int getHeight() {
 		return height;
 	}
@@ -80,6 +93,10 @@ public class MazeGenerator {
 		this.seed = seed;
 	}
 	
+	/**
+	 * Sets whether animations are to be shown or not
+	 * @param showAnimations, boolean
+	 */
 	public void setAnimation(boolean showAnimations) {
 		this.animate = showAnimations;
 	}
