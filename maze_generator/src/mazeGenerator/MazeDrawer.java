@@ -33,6 +33,7 @@ import datatypes.Maze;
 import datatypes.Node;
 import datatypes.Wall;
 import program.MazeGenerator;
+import program.MazeType;
 
 public class MazeDrawer {
 	
@@ -174,7 +175,11 @@ public class MazeDrawer {
 		c.gridy = line;
 		settingsGrid.add(new JLabel("Generation Algorithm:"), c);
 		// Algorithm selection dropdown menu (JComboBox)
-		String[] algorithms = {"DFS", "Prim"};
+		String[] algorithms = new String[MazeType.values().length];
+		for (int i = 0; i < algorithms.length; i++) {
+			MazeType type_i = MazeType.values()[i];
+			algorithms[i] = type_i.toString();
+		}
 		JComboBox<String> cbAlgorithms = new JComboBox<String>(algorithms);
 		int selectedIndex = getSelectedMazeTypeIndex(algorithms);
 		cbAlgorithms.setSelectedIndex(selectedIndex);
@@ -462,15 +467,15 @@ public class MazeDrawer {
 	private int getSelectedMazeTypeIndex(String[] list) {
 		int selectedIndex = -1;
 		for (int i = 0; i < list.length; i++) {
-			String listElement = list[i].toLowerCase();
-			String mazeType = generator.getMazeType().toLowerCase();
-			if (listElement.equals(mazeType)) {
+			String listElement = list[i];
+			MazeType mazeType = generator.getMazeType();
+			if (listElement.equals(mazeType.toString())) {
 				selectedIndex = i;
 			}
 		}
 		if (selectedIndex < 0) {
 			selectedIndex = 0;
-			generator.setMazeType("dfs");
+			generator.setMazeType(MazeType.DFS);
 		}
 		return selectedIndex;
 	}
@@ -627,7 +632,8 @@ public class MazeDrawer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String selectedItem = (String) cbAlgorithms.getSelectedItem();
-				generator.setMazeType(selectedItem.toLowerCase());
+				MazeType mazeType = MazeType.parseString(selectedItem);
+				generator.setMazeType(mazeType);
 			}
 		};
 		cbAlgorithms.addActionListener(cbActionListener);

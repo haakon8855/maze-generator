@@ -11,7 +11,7 @@ public class MazeGenerator {
 	public static boolean DEBUG = true;
 	
 	private int width, height, animationDelay;
-	private String mazeType;
+	private MazeType mazeType;
 	private long seed;
 	private boolean timer, animate;
 	
@@ -25,7 +25,7 @@ public class MazeGenerator {
 		this.height = cfg.getPositiveInteger("height");
 		setDimensions(width, height);
 
-		this.mazeType = cfg.get("type").toLowerCase();
+		this.mazeType = cfg.getMazeType();
 
 		this.animate = cfg.getBoolean("animate");
 		this.animationDelay = cfg.getPositiveInteger("animationDelay");
@@ -73,7 +73,7 @@ public class MazeGenerator {
 	 * Gets the currently selected maze type
 	 * @return String representing the currently selected type
 	 */
-	public String getMazeType() {
+	public MazeType getMazeType() {
 		return mazeType;
 	}
 	
@@ -81,7 +81,7 @@ public class MazeGenerator {
 	 * Sets the maze type
 	 * @param String mazeType representing the currently selected type
 	 */
-	public void setMazeType(String mazeType) {
+	public void setMazeType(MazeType mazeType) {
 		this.mazeType = mazeType;
 	}
 	
@@ -107,11 +107,11 @@ public class MazeGenerator {
 	 */
 	private MazeGen makeNewGenerator() {
 		switch (mazeType) {
-			case "dfs":
+			case DFS:
 				gen = new MazeGenDFS(width, height, drawer, seed,
 									 animate, animationDelay);
 				break;
-			case "prim":
+			case PRIM:
 				gen = new MazeGenPrim(width, height, drawer, seed,
 									  animate, animationDelay);
 				break;

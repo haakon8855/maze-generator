@@ -57,6 +57,17 @@ public class MazeGeneratorReadConfig {
 	}
 	
 	/**
+	 * Fetches the maze type from the config file and converts it as a MazeType
+	 * enumerator.
+	 * @return MazeType mazeType
+	 */
+	public MazeType getMazeType() {
+		String type = get("type");
+		MazeType mazeType = MazeType.parseString(type);
+		return mazeType;
+	}
+	
+	/**
 	 * Fetches the value from the config file, and treating it as a long.
 	 * If the integer value is negative, 0 is returned.
 	 * @param key, indicating which variable in the config file to fetch.
