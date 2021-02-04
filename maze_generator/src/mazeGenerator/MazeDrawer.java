@@ -24,9 +24,12 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
 
 import datatypes.Maze;
@@ -39,6 +42,7 @@ public class MazeDrawer {
 	
 	public static final int maxDimension = 200;
 	public static final int settingsWidth = 350;
+	public static final int sliderMax = 100;
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -52,6 +56,7 @@ public class MazeDrawer {
 	private JFormattedTextField heightInput;
 	private JCheckBox randomCheckBox;
 	private JCheckBox animationCheckBox;
+	private JSlider animationSlider;
 	
 	private MazeGenerator generator;
 	
@@ -61,16 +66,21 @@ public class MazeDrawer {
 	 * @param heightInBlocks given in number of nodes/blocks
 	 */
 	public MazeDrawer(int widthInBlocks, int heightInBlocks, int animationDelay, 
-														MazeGenerator generator) {
+					  boolean animate, 
+					  long seed, MazeGenerator generator) {
 		this.animationDelay = animationDelay;
 		this.generator = generator;
 
 		// Initialize main window
 		init(widthInBlocks, heightInBlocks);
 
-		this.randomCheckBox.setSelected(true);
-		this.seed.setEditable(false);
-		this.animationCheckBox.setSelected(true);
+		this.randomCheckBox.setSelected(seed == 0);
+		this.seed.setEditable(seed != 0);
+		if (seed == 0) {
+			setSeedValue(seed);
+		}
+		this.animationCheckBox.setSelected(animate);
+		this.setAnimationSliderValue(this.generator.getAnimationSpeed());
 		this.btnAbort.setEnabled(false);
 	}
 	
@@ -148,11 +158,13 @@ public class MazeDrawer {
 		JPanel settingsGrid = new JPanel(new GridBagLayout());
 
 		// Add settings components
-		addAlgortihmSelection(settingsGrid, 0);
-		addWidthHeightInput(settingsGrid, 1);
-		addSeedInput(settingsGrid, 3);
-		addSeedCheckBox(settingsGrid, 4);
-		addUseAnimation(settingsGrid, 5);
+		int i = 0;
+		addAlgortihmSelection(settingsGrid, i); i++;
+		addWidthHeightInput(settingsGrid, i); i+=2;
+		addSeedInput(settingsGrid, i); i++;
+		addSeedCheckBox(settingsGrid, i); i++;
+		addUseAnimation(settingsGrid, i); i++;
+		addAnimationSpeedSlider(settingsGrid, i); i++;
 
 		this.settingsPanel.add(settingsGrid);
 
@@ -290,6 +302,25 @@ public class MazeDrawer {
 		c.gridy = line;
 		this.animationCheckBox = new JCheckBox();
 		settingsGrid.add(this.animationCheckBox, c);
+	}
+	
+	/**
+	 * Adds a slider to select animation speed
+	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
+	 */
+	private void addAnimationSpeedSlider(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
+		// Use animation label
+		c.gridx = 0;
+		c.gridy = line;
+		settingsGrid.add(new JLabel("Animation speed"), c);
+		// Animation speed slider
+		c.gridx = 1;
+		c.gridy = line;
+		this.animationSlider = new JSlider();
+		settingsGrid.add(this.animationSlider, c);
 	}
 	
 	/**
@@ -458,6 +489,24 @@ public class MazeDrawer {
 	}
 	
 	/**
+	 * Sets the value for the animation slider.
+	 * @param animation speed, number between 0 and 1 indicating the speed.
+	 */
+	public void setAnimationSliderValue(float animationSpeed) {
+		int sliderValue = Math.round(animationSpeed * sliderMax);
+		this.animationSlider.setValue(sliderValue);
+	}
+	
+	/**
+	 * Sets the value for the animation slider.
+	 * @param animation speed, number between 0 and 1 indicating the speed.
+	 */
+	public float getAnimationSliderSpeed() {
+		int sliderValue = this.animationSlider.getValue();
+		return (float) sliderValue / sliderMax;
+	}
+	
+	/**
 	 * Returns the index of the currently set algorithm from the configuration file
 	 * @param list
 	 * @return int index corresponding to the currently selected item in the list
@@ -602,6 +651,16 @@ public class MazeDrawer {
 		addSelectAllOnFocusActionListener(seed);
 		addSelectAllOnFocusActionListener(widthInput);
 		addSelectAllOnFocusActionListener(heightInput);
+		addSliderChangedListener(this.animationSlider);
+	}
+	
+	public void addSliderChangedListener(JSlider slider) {
+		slider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				generator.setAnimationSpeed(getAnimationSliderSpeed());
+			}
+		});
 	}
 	
 	public void addSelectAllOnFocusActionListener(JTextField field) {

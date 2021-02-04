@@ -10,7 +10,7 @@ public class MazeGenerator {
 	
 	public static boolean DEBUG = true;
 	
-	private int width, height, animationDelay;
+	private int width, height, animationDelay, minDelay, maxDelay;
 	private MazeType mazeType;
 	private long seed;
 	private boolean timer, animate;
@@ -29,12 +29,15 @@ public class MazeGenerator {
 
 		this.animate = cfg.getBoolean("animate");
 		this.animationDelay = cfg.getPositiveInteger("animationDelay");
+		this.minDelay = cfg.getPositiveInteger("animationSliderMin");
+		this.maxDelay = cfg.getPositiveInteger("animationSliderMax");
 
 		this.timer = cfg.getBoolean("timer");
 		
 		this.seed = cfg.getLong("seed");
 
-		this.drawer = new MazeDrawer(width, height, animationDelay, this);
+		this.drawer = new MazeDrawer(width, height, animationDelay, animate,
+									 seed, this);
 		this.drawer.setWidthValue(width);
 		this.drawer.setHeightValue(height);
 	}
@@ -99,6 +102,25 @@ public class MazeGenerator {
 	 */
 	public void setAnimation(boolean showAnimations) {
 		this.animate = showAnimations;
+	}
+	
+	/**
+	 * Sets the speed at which animations are to be drawn
+	 * @param float animationSpeed, number between 0 and 1 indicating slider val
+	 */
+	public void setAnimationSpeed(float animationSpeed) {
+		float inverse = 1 - animationSpeed;
+		this.animationDelay = Math.round((inverse * (maxDelay-minDelay)) + minDelay);
+	}
+	
+	/**
+	 * Gets the speed at which animations are to be drawn
+	 * @return A float between 0 and 1 representing the animation speed
+	 */
+	public float getAnimationSpeed() {
+		float inverse = ((float) this.animationDelay - minDelay) / (maxDelay-minDelay);
+		float speed = 1 - inverse;
+		return speed;
 	}
 
 	/**
