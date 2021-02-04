@@ -1,7 +1,7 @@
 # Maze Generator
 A maze generator written in Java, generating mazes of custom size.
-Maze type and seed settings can be set in the GUI, while the maze size has to be set in the config
-file. The maze size will automatically scale to fit the screen size.
+Maze type, seed and other settings can be set in the GUI  
+The maze size will automatically scale to fit the screen size.
 
 There are currently only two maze generation algorithms implemented, both of which
 are randomized versions of graph algorithms, specifically Depth First Search and Prim's algorithm.
@@ -20,7 +20,8 @@ version of Java, although any JDK above version 11 should be perfectly fine.
 
 ### Clone
 Simply clone the project to a Java IDE such as Eclipse or IntelliJ and run the main class 
-maze_generator.program.MazeGenerator.java clone the project and compile and run manually. If you opt
+maze_generator.program.MazeGenerator.java or you could clone the project to any local 
+directory and compile and run manually. If you opt
 for the latter, i'm sure you know what you're doing, just run the main class program.MazeGenerator
 in the maze_generator module. 
 
@@ -28,22 +29,24 @@ in the maze_generator module.
 - JDK 11 or higher
 
 # Configuration
-Most settings can be changed in the application's GUI. Some settings, however, can only be edited 
-int the configuration file, config.conf. This file can also be used to change the default settings
+Most settings can be changed in the application's GUI. There is however also a
+config file, config.conf, which can be used to change some more 'experimental'
+settings.
+The main purpose of this config file is mainly to change the default settings
 when starting the application.
-Currently, you can modify the width, height, seed, animation settings, timer settings and maze type
+You can modify the width, height, seed, animation settings, timer settings and maze type
 here. Below is an explanation of how to change these in the config file.
 
 ### Width and height
 Changing the maze dimensions, will cause the maze to have more 'rooms' and hallways, and it
 will automatically scale the size of each hallway to fit your screen. Each dimension must be
 at least 5 and should not be larger than three times the other dimension.  
-**Possible values:** any positive integer larger than 5  
+**Possible values:** Any positive integer larger than 5  
 ###### Example:  
 
 ```
-width = 20
-height = 20
+width = 48
+height = 22
 ```
 
 ### Maze type (algorithm)
@@ -59,10 +62,10 @@ type = dfs
 ### Seed
 The seed causes your maze to generate with the given seed. This means that as long as your
 initial conditions (width, height, generation algorithm and seed) are the same, the maze
-generator will generate the same maze every time you run the code.
+generator will generate the same maze every time you run it.
 
-**Possible values:** any positive integer (including 0) ;P  
-If seed is 0, program will generate its own random seed, resulting in a random maze.  
+**Possible values:** Any positive integer (including 0) ;P  
+If seed is 0, the program will generate its own random seed, resulting in a random maze each iteration.  
 ###### Example:
 
 ```
@@ -78,7 +81,7 @@ Furthermore, you can change the speed at which
 the generation process runs, by changing the animation delay. A higher delay value
 causes the maze to generate slower. I recommend a value between 0 and 20 depending
 on the maze size.  
-**Possible values:** any positive integer  
+**Possible values:** Any positive integer  
 ###### Example:
 
 ```
