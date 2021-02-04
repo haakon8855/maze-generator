@@ -7,11 +7,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -652,6 +656,29 @@ public class MazeDrawer {
 		addSelectAllOnFocusActionListener(widthInput);
 		addSelectAllOnFocusActionListener(heightInput);
 		addSliderChangedListener(this.animationSlider);
+		addKeyListener();
+	}
+	
+	public void addKeyListener() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+			.addKeyEventDispatcher(new KeyEventDispatcher() {
+				@Override
+				public boolean dispatchKeyEvent(KeyEvent e) {
+					if (KeyEvent.KEY_PRESSED == e.getID()) {
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_ESCAPE:
+							btnAbort.doClick();
+							break;
+						case KeyEvent.VK_ENTER:
+							btnGenerate.doClick();
+							break;
+						default:
+							break;
+						}
+					}
+					return false;
+				}
+			});
 	}
 	
 	public void addSliderChangedListener(JSlider slider) {
