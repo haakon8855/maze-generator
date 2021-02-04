@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -70,8 +69,7 @@ public class MazeDrawer {
 	 * @param heightInBlocks given in number of nodes/blocks
 	 */
 	public MazeDrawer(int widthInBlocks, int heightInBlocks, int animationDelay, 
-					  boolean animate, 
-					  long seed, MazeGenerator generator) {
+					  boolean animate, long seed, MazeGenerator generator) {
 		this.animationDelay = animationDelay;
 		this.generator = generator;
 
@@ -131,11 +129,20 @@ public class MazeDrawer {
 		this.addActionListeners();
 	}
 	
+	/**
+	 * Sets the window's icon in the title bar
+	 * @param icon path
+	 */
 	private void setIcon(String path) {
 		Image icon = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource(path));
 		this.frame.setIconImage(icon);
 	}
 	
+	/**
+	 * Resizes the canvas to fit the current width and heigth of the program
+	 * @param blocksize
+	 * @param wallWidth
+	 */
 	private void resize(int blocksize, int wallWidth) {
 		this.canvas.setSize(width, height);
 		this.canvas.setPreferredSize(new Dimension(width, height));
@@ -659,11 +666,16 @@ public class MazeDrawer {
 		addKeyListener();
 	}
 	
+	/**
+	 * Adds a key listener to the program such that keypresses can be registered
+	 * and handled accordingly regardless of where the user's focus is.
+	 */
 	public void addKeyListener() {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 			.addKeyEventDispatcher(new KeyEventDispatcher() {
 				@Override
 				public boolean dispatchKeyEvent(KeyEvent e) {
+					// Only events of key pressed down, not released etc.
 					if (KeyEvent.KEY_PRESSED == e.getID()) {
 						switch (e.getKeyCode()) {
 						case KeyEvent.VK_ESCAPE:
@@ -681,6 +693,11 @@ public class MazeDrawer {
 			});
 	}
 	
+	/**
+	 * Adds a changed listener to the slider to call a function every time
+	 * the slider is changed.
+	 * @param slider
+	 */
 	public void addSliderChangedListener(JSlider slider) {
 		slider.addChangeListener(new ChangeListener() {
 			@Override
@@ -690,6 +707,10 @@ public class MazeDrawer {
 		});
 	}
 	
+	/**
+	 * Selects all text in a given text field when that text field gets focus.
+	 * @param field
+	 */
 	public void addSelectAllOnFocusActionListener(JTextField field) {
 		field.addFocusListener(new FocusListener() {
 			@Override

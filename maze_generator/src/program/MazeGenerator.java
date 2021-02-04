@@ -8,7 +8,7 @@ import mazeGenerator.SwingWorkerGenerate;
 
 public class MazeGenerator {
 	
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	
 	private int width, height, animationDelay, minDelay, maxDelay;
 	private MazeType mazeType;
