@@ -32,7 +32,7 @@ in the maze_generator module.
 Most settings can be changed in the application's GUI. There is however also a
 config file, config.conf, which can be used to change some more 'experimental'
 settings.
-The main purpose of this config file is mainly to change the default settings
+The main purpose of this config file though, is mainly to be able to change the default settings
 when starting the application.
 You can modify the width, height, seed, animation settings, timer settings and maze type
 here. Below is an explanation of how to change these in the config file.
