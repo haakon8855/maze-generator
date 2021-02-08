@@ -12,7 +12,9 @@ messier-looking maze, but one which seems to be more difficult to traverse than 
 # Usage
 To run this program, you can download the runnable .jar file or clone this project to a Java IDE
 
-### Download 
+## Downloading
+
+### Runnable .jar
 First download the [jar](https://github.com/haakon8855/maze_generator/releases), then execute the 
 program by running `java -jar haakons_maze_generator_vX.X.jar`.
 This application has only been tested on JDK 11, and I can not guarantee any success on any other
@@ -24,6 +26,14 @@ maze_generator.program.MazeGenerator.java or you could clone the project to any 
 directory and compile and run manually. If you opt
 for the latter, i'm sure you know what you're doing, just run the main class program.MazeGenerator
 in the maze_generator module. 
+
+## Keybindings
+You can use the following shortcuts for easier access to the GUI-elements:  
+| Key           | Function                     |
+| ------------- |:-------------                |
+| Return        | Generate                     |
+| Escape        | Abort                        |
+| R			    | Restart (Abort and generate) |
 
 # Requirements
 - JDK 11 or higher
