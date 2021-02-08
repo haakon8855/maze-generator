@@ -60,6 +60,8 @@ public class MazeDrawer {
 	private JCheckBox randomCheckBox;
 	private JCheckBox animationCheckBox;
 	private JSlider animationSlider;
+	private JPanel timerPanel;
+	private JLabel labelTimer;
 	
 	private MazeGenerator generator;
 	
@@ -180,6 +182,7 @@ public class MazeDrawer {
 
 		this.settingsPanel.add(settingsGrid);
 
+		addTimerPanel(settingsGrid);
 		addControlPanel(settingsGrid);
 
 		this.container.add(settingsPanel);
@@ -333,6 +336,19 @@ public class MazeDrawer {
 		c.gridy = line;
 		this.animationSlider = new JSlider();
 		settingsGrid.add(this.animationSlider, c);
+	}
+	
+	/**
+	 * Add the panel containing the timer to the UI
+	 * @param settingsPanel
+	 */
+	private void addTimerPanel(JPanel settingsPanel) {
+		this.timerPanel = new JPanel();
+		timerPanel.add(new JLabel("Elapsed time:"));
+		this.labelTimer = new JLabel("--:--.--");
+		timerPanel.add(labelTimer);
+		timerPanel.setVisible(false);
+		this.settingsPanel.add(timerPanel);
 	}
 	
 	/**
@@ -631,6 +647,38 @@ public class MazeDrawer {
 	public void activateGenerationBtn() {
 		btnGenerate.setEnabled(true);
 		btnAbort.setEnabled(false);
+	}
+	
+	/**
+	 * Sets the time showing in the labelTimer JLabel
+	 * @param millis
+	 */
+	public void setTime(long millis) {
+		labelTimer.setText(millis+"ms");
+	}
+	
+	/**
+	 * Resets the text showing in the labelTimer JLabel
+	 */
+	public void resetTime() {
+		labelTimer.setText("");
+	}
+
+	/**
+	 * Hides the 'Elapsed time' and time text
+	 */
+	public void hideTime() {
+		timerPanel.setVisible(false);
+		settingsPanel.revalidate();
+	}
+	
+	/**
+	 * Hides the 'Elapsed time' and time text
+	 */
+	public void showTime() {
+		timerPanel.setVisible(true);
+		settingsPanel.revalidate();
+		frame.pack();
 	}
 	
 	/**

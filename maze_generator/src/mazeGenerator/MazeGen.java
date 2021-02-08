@@ -148,6 +148,9 @@ public abstract class MazeGen {
 	 * Delays and then updates the drawn maze.
 	 */
 	public void mazeChanged(SwingWorkerGenerate worker) throws InterruptedException {
+		if (worker.isCancelled()) {
+			throw new InterruptedException("Job got cancelled.");
+		}
 		if (animate) {
 			worker.update(maze);
 			delay();

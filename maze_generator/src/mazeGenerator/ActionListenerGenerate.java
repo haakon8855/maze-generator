@@ -41,6 +41,8 @@ public class ActionListenerGenerate implements ActionListener {
 				this.worker.cancel(true);
 				this.worker = null;
 			}
+			drawer.resetTime();
+			drawer.hideTime();
 			drawer.activateGenerationBtn();
 		}
 	}

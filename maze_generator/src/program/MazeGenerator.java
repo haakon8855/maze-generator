@@ -163,6 +163,8 @@ public class MazeGenerator {
 			if (timer) {
 				endTime = System.currentTimeMillis();
 				elapsed = endTime - startTime;
+				drawer.showTime();
+				drawer.setTime(elapsed);
 				System.out.println("Time: " + elapsed + "ms");
 			}
 			drawer.updateMaze(gen.getMaze());
