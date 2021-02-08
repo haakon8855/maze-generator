@@ -5,10 +5,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -21,16 +27,25 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
 
 import datatypes.Maze;
 import datatypes.Node;
 import datatypes.Wall;
 import program.MazeGenerator;
+import program.MazeType;
 
 public class MazeDrawer {
 	
+	public static final int maxDimension = 200;
+	public static final int settingsWidth = 350;
+	public static final int sliderMax = 100;
 	private int width, height;
 	private int animationDelay;
 	private JFrame frame;
@@ -40,8 +55,13 @@ public class MazeDrawer {
 	private JButton btnGenerate;
 	private JButton btnAbort;
 	private JFormattedTextField seed;
+	private JFormattedTextField widthInput;
+	private JFormattedTextField heightInput;
 	private JCheckBox randomCheckBox;
 	private JCheckBox animationCheckBox;
+	private JSlider animationSlider;
+	private JPanel timerPanel;
+	private JLabel labelTimer;
 	
 	private MazeGenerator generator;
 	
@@ -51,13 +71,31 @@ public class MazeDrawer {
 	 * @param heightInBlocks given in number of nodes/blocks
 	 */
 	public MazeDrawer(int widthInBlocks, int heightInBlocks, int animationDelay, 
-														MazeGenerator generator) {
+					  boolean animate, long seed, MazeGenerator generator) {
+		this.animationDelay = animationDelay;
+		this.generator = generator;
+
+		// Initialize main window
+		init(widthInBlocks, heightInBlocks);
+
+		this.randomCheckBox.setSelected(seed == 0);
+		this.seed.setEditable(seed != 0);
+		if (seed == 0) {
+			setSeedValue(seed);
+		}
+		this.animationCheckBox.setSelected(animate);
+		this.setAnimationSliderValue(this.generator.getAnimationSpeed());
+		this.btnAbort.setEnabled(false);
+	}
+	
+	private void init(int widthInBlocks, int heightInBlocks) {
+		if (this.frame != null) {
+			this.frame.setVisible(false);
+			this.frame.dispose();
+		}
 		// Set up main JFrame
 		this.frame = new JFrame("Håkon's Maze Generator");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		this.animationDelay = animationDelay;
-		this.generator = generator;
 		
 		// Calculate some needed values
 		int blocksize = calculateBlocksize(widthInBlocks, heightInBlocks);
@@ -71,11 +109,15 @@ public class MazeDrawer {
 		// Main flowLayout-style-container for all other UI-elements
 		this.container = new JPanel(new FlowLayout());
 		
+		
 		// Initialize the canvas
 		initCanvas(blocksize, blocksize);
 		
 		// Initialize the settings panel
 		initSettingsPanel();
+		
+		// Set application icon
+		setIcon("icon32x32.png");
 
 		// Finally, add the main container JPanel to the frame
 		this.frame.add(this.container);
@@ -83,14 +125,37 @@ public class MazeDrawer {
 		this.frame.setResizable(false);
 		this.frame.setVisible(true);
 
-		// Initialize the necessary action listeners for the UI-elements
-		this.addActionListeners();
-		
 		// Set blank canvas
 		clearCanvas();
-		this.randomCheckBox.setSelected(true);
-		this.seed.setEditable(false);
-		this.animationCheckBox.setSelected(true);
+
+		// Initialize the necessary action listeners for the UI-elements
+		this.addActionListeners();
+	}
+	
+	/**
+	 * Sets the window's icon in the title bar
+	 * @param icon path
+	 */
+	private void setIcon(String path) {
+		Image icon = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource(path));
+		this.frame.setIconImage(icon);
+	}
+	
+	/**
+	 * Resizes the canvas to fit the current width and heigth of the program
+	 * @param blocksize
+	 * @param wallWidth
+	 */
+	private void resize(int blocksize, int wallWidth) {
+		this.canvas.setSize(width, height);
+		this.canvas.setPreferredSize(new Dimension(width, height));
+		this.canvas.setBlocksize(blocksize);
+		this.canvas.setWallWidth(wallWidth);
+		this.settingsPanel.setSize(settingsWidth, height);
+		this.settingsPanel.setPreferredSize(new Dimension(settingsWidth, height));
+		this.frame.pack();
+		clearCanvas();
+		centerScreen();
 	}
 	
 	/**
@@ -100,20 +165,24 @@ public class MazeDrawer {
 		this.settingsPanel = new JPanel();
 		this.settingsPanel.setLayout(new BoxLayout(this.settingsPanel, BoxLayout.Y_AXIS));
 		// temprorary size
-		Dimension settingsDim = new Dimension(350, height);
+		Dimension settingsDim = new Dimension(settingsWidth, height);
 		this.settingsPanel.setSize(settingsDim);
 		this.settingsPanel.setPreferredSize(settingsDim);
 		
 		JPanel settingsGrid = new JPanel(new GridBagLayout());
 
 		// Add settings components
-		addAlgortihmSelection(settingsGrid);
-		addSeedInput(settingsGrid);
-		addSeedCheckBox(settingsGrid);
-		addUseAnimation(settingsGrid);
+		int i = 0;
+		addAlgortihmSelection(settingsGrid, i); i++;
+		addWidthHeightInput(settingsGrid, i); i+=2;
+		addSeedInput(settingsGrid, i); i++;
+		addSeedCheckBox(settingsGrid, i); i++;
+		addUseAnimation(settingsGrid, i); i++;
+		addAnimationSpeedSlider(settingsGrid, i); i++;
 
 		this.settingsPanel.add(settingsGrid);
 
+		addTimerPanel(settingsGrid);
 		addControlPanel(settingsGrid);
 
 		this.container.add(settingsPanel);
@@ -123,41 +192,86 @@ public class MazeDrawer {
 	 * Add the option to select the algorithm used for maze generation. A dropdown list of 
 	 * algorithms.
 	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addAlgortihmSelection(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addAlgortihmSelection(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Algorithm selection label
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Generation Algorithm:"), c);
 		// Algorithm selection dropdown menu (JComboBox)
-		String[] algorithms = {"DFS", "Prim"};
+		String[] algorithms = new String[MazeType.values().length];
+		for (int i = 0; i < algorithms.length; i++) {
+			MazeType type_i = MazeType.values()[i];
+			algorithms[i] = type_i.toString();
+		}
 		JComboBox<String> cbAlgorithms = new JComboBox<String>(algorithms);
 		int selectedIndex = getSelectedMazeTypeIndex(algorithms);
 		cbAlgorithms.setSelectedIndex(selectedIndex);
 		c.gridx = 1;
-		c.gridy = 0;
+		c.gridy = line;
 		addCbAlgorithmsActionListener(cbAlgorithms);
 		settingsGrid.add(cbAlgorithms, c);
 		settingsGrid.setAlignmentY(Component.TOP_ALIGNMENT);
 	}
 	
 	/**
+	 * Add width and height input boxes
+	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
+	 */
+	private void addWidthHeightInput(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
+		// Width input label
+		c.gridx = 0;
+		c.gridy = line;
+		settingsGrid.add(new JLabel("Width: "), c);
+		// Width input box
+		c.gridx = 1;
+		c.gridy = line;
+		this.widthInput = new JFormattedTextField(makeDimensionFormatter());
+		this.widthInput.setColumns(18);
+		this.widthInput.setMinimumSize(new Dimension(170, 20));
+		this.widthInput.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.widthInput.setVisible(true);
+		settingsGrid.add(this.widthInput, c);
+		
+		// Height
+		line++;
+		// Height input label
+		c.gridx = 0;
+		c.gridy = line;
+		settingsGrid.add(new JLabel("Heigth: "), c);
+		// Height input box
+		c.gridx = 1;
+		c.gridy = line;
+		this.heightInput = new JFormattedTextField(makeDimensionFormatter());
+		this.heightInput.setColumns(18);
+		this.heightInput.setMinimumSize(new Dimension(170, 20));
+		this.heightInput.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.heightInput.setVisible(true);
+		settingsGrid.add(this.heightInput, c);
+	}
+	
+	/**
 	 * Add the input field for seed selection to the UI.
 	 * This field is also used to show the randomly generated seed in order to save seeds.
-	 * @param settingsGrid
+	 * @param settingsGridd
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addSeedInput(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addSeedInput(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Seed input field label
 		c.gridx = 0;
-		c.gridy = 1;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Seed: "), c);
 		// Seed input
 		c.gridx = 1;
-		c.gridy = 1;
+		c.gridy = line;
 		NumberFormatter formatter = makeLongFormatter();
 		this.seed = new JFormattedTextField(formatter);
 		this.seed.setColumns(18);
@@ -170,17 +284,18 @@ public class MazeDrawer {
 	/**
 	 * Add the option to use random or custom seed to the UI
 	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addSeedCheckBox(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addSeedCheckBox(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Seed check box label
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Use random seed"), c);
 		// Seed check box
 		c.gridx = 1;
-		c.gridy = 2;
+		c.gridy = line;
 		this.randomCheckBox = new JCheckBox();
 		settingsGrid.add(this.randomCheckBox, c);
 	}
@@ -188,19 +303,52 @@ public class MazeDrawer {
 	/**
 	 * Add the option to use animations or not to the UI
 	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
 	 */
-	private void addUseAnimation(JPanel settingsGrid) {
-		// Contstraints
-		GridBagConstraints c = getDetfaultConstraints();
+	private void addUseAnimation(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
 		// Use animation label
 		c.gridx = 0;
-		c.gridy = 3;
+		c.gridy = line;
 		settingsGrid.add(new JLabel("Show animation"), c);
 		// Use animation checkbox
 		c.gridx = 1;
-		c.gridy = 3;
+		c.gridy = line;
 		this.animationCheckBox = new JCheckBox();
 		settingsGrid.add(this.animationCheckBox, c);
+	}
+	
+	/**
+	 * Adds a slider to select animation speed
+	 * @param settingsGrid
+	 * @param line number for where to put boxes in the grid
+	 */
+	private void addAnimationSpeedSlider(JPanel settingsGrid, int line) {
+		// Constraints
+		GridBagConstraints c = getDefaultConstraints();
+		// Use animation label
+		c.gridx = 0;
+		c.gridy = line;
+		settingsGrid.add(new JLabel("Animation speed"), c);
+		// Animation speed slider
+		c.gridx = 1;
+		c.gridy = line;
+		this.animationSlider = new JSlider();
+		settingsGrid.add(this.animationSlider, c);
+	}
+	
+	/**
+	 * Add the panel containing the timer to the UI
+	 * @param settingsPanel
+	 */
+	private void addTimerPanel(JPanel settingsPanel) {
+		this.timerPanel = new JPanel();
+		timerPanel.add(new JLabel("Elapsed time:"));
+		this.labelTimer = new JLabel("--:--.--");
+		timerPanel.add(labelTimer);
+		timerPanel.setVisible(false);
+		this.settingsPanel.add(timerPanel);
 	}
 	
 	/**
@@ -216,7 +364,6 @@ public class MazeDrawer {
 		this.btnAbort = new JButton("Abort");
 		this.btnAbort.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.btnAbort.setActionCommand("stop");
-		this.btnAbort.setEnabled(false);
 		controlPanel.add(btnAbort);
 		this.settingsPanel.add(controlPanel);
 	}
@@ -225,11 +372,40 @@ public class MazeDrawer {
 	 * Generates a default GridBagConstraints for use when adding elements to the UI
 	 * @return GridBagConstraints constraint
 	 */
-	private GridBagConstraints getDetfaultConstraints() {
+	private GridBagConstraints getDefaultConstraints() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(4, 10, 4, 10);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		return c;
+	}
+	
+	/**
+	 * Makes the numberformatter used to keep only digits in the width and height input fields.
+	 * @return numberformatter which formats numbers for dimensions
+	 */
+	public NumberFormatter makeDimensionFormatter() {
+		NumberFormat format = NumberFormat.getInstance();
+		format.setGroupingUsed(false);
+		NumberFormatter formatter = new NumberFormatter(format) {
+			private static final long serialVersionUID = -3632582082611336565L;
+			public Object stringToValue(String string) throws ParseException {
+				if (string == null || string.length() == 0) {
+					return null;
+				}
+				Object value = super.stringToValue(string);
+				int intValue = (Integer) value;
+				if (intValue > maxDimension) {
+					intValue = maxDimension;
+				}
+				return super.stringToValue("" + intValue);
+			}
+		};
+		formatter.setValueClass(Integer.class);
+		formatter.setMinimum(0);
+		formatter.setMaximum(maxDimension*10);
+		formatter.setAllowsInvalid(false);
+		formatter.setCommitsOnValidEdit(true);
+		return formatter;
 	}
 	
 	/**
@@ -258,6 +434,46 @@ public class MazeDrawer {
 	}
 	
 	/**
+	 * Sends the dimensions (width and height) to the generator
+	 */
+	public void submitDimensions() {
+		int widthInBlocks = 20;
+		int heightInBlocks = 20;
+		Object widthVal = this.widthInput.getValue();
+		Object heightVal = this.heightInput.getValue();
+		if (widthVal != null) {
+			widthInBlocks = (int) widthVal;
+		}
+		if (heightVal != null) {
+			heightInBlocks = (int) heightVal;
+		}
+
+		int oldWidthInBlocks = generator.getWidth();
+		int oldHeightInBlocks = generator.getHeight();
+		generator.setDimensions(widthInBlocks, heightInBlocks);
+		int newWidthInBlocks = generator.getWidth();
+		int newHeightInBlocks = generator.getHeight();
+		if (newWidthInBlocks != widthInBlocks) {
+			widthInBlocks = newWidthInBlocks;
+		}
+		if (newHeightInBlocks != heightInBlocks) {
+			heightInBlocks = newHeightInBlocks;
+		}
+		boolean dimChanged = true;
+		if (oldWidthInBlocks == newWidthInBlocks && oldHeightInBlocks == newHeightInBlocks) {
+			dimChanged = false;
+		}
+		this.widthInput.setValue(widthInBlocks);
+		this.heightInput.setValue(heightInBlocks);
+		if (dimChanged) {
+			int blocksize = calculateBlocksize(widthInBlocks, heightInBlocks);
+			this.width = calculateWidth(widthInBlocks, blocksize);	// width in pixels
+			this.height = calculateHeight(heightInBlocks, blocksize); // height in pixels
+			resize(blocksize, blocksize);
+		}
+	}
+	
+	/**
 	 * Sends the seed in the seed input field to the generator if the checkbox for random seed
 	 * is not ticked.
 	 */
@@ -274,12 +490,48 @@ public class MazeDrawer {
 	}
 	
 	/**
+	 * Sets the value in the width input box
+	 * @param width
+	 */
+	public void setWidthValue(int width) {
+		this.widthInput.setText("");
+		this.widthInput.setText("" + width);
+	}
+	
+	/**
+	 * Sets the value in the height input box
+	 * @param height
+	 */
+	public void setHeightValue(int height) {
+		this.heightInput.setText("");
+		this.heightInput.setText("" + height);
+	}
+	
+	/**
 	 * Sets the value in the seed input field.
 	 * @param seed
 	 */
 	public void setSeedValue(long seed) {
 		this.seed.setText("");
 		this.seed.setText("" + seed);
+	}
+	
+	/**
+	 * Sets the value for the animation slider.
+	 * @param animation speed, number between 0 and 1 indicating the speed.
+	 */
+	public void setAnimationSliderValue(float animationSpeed) {
+		int sliderValue = Math.round(animationSpeed * sliderMax);
+		this.animationSlider.setValue(sliderValue);
+	}
+	
+	/**
+	 * Sets the value for the animation slider.
+	 * @param animation speed, number between 0 and 1 indicating the speed.
+	 */
+	public float getAnimationSliderSpeed() {
+		int sliderValue = this.animationSlider.getValue();
+		return (float) sliderValue / sliderMax;
 	}
 	
 	/**
@@ -292,15 +544,15 @@ public class MazeDrawer {
 	private int getSelectedMazeTypeIndex(String[] list) {
 		int selectedIndex = -1;
 		for (int i = 0; i < list.length; i++) {
-			String listElement = list[i].toLowerCase();
-			String mazeType = generator.getMazeType().toLowerCase();
-			if (listElement.equals(mazeType)) {
+			String listElement = list[i];
+			MazeType mazeType = generator.getMazeType();
+			if (listElement.equals(mazeType.toString())) {
 				selectedIndex = i;
 			}
 		}
 		if (selectedIndex < 0) {
 			selectedIndex = 0;
-			generator.setMazeType("dfs");
+			generator.setMazeType(MazeType.DFS);
 		}
 		return selectedIndex;
 	}
@@ -325,8 +577,10 @@ public class MazeDrawer {
 		// Dimensions of users screen
 		int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+		int windowWidth = this.width + settingsWidth;
+		int windowHeight = this.height;
 		// sets location to center of screen
-		this.frame.setLocation((screenWidth-this.width)/2, (screenHeight-this.height)/2);
+		this.frame.setLocation((screenWidth-windowWidth)/2, (screenHeight-windowHeight)/2);
 	}
 	
 	/**
@@ -396,6 +650,38 @@ public class MazeDrawer {
 	}
 	
 	/**
+	 * Sets the time showing in the labelTimer JLabel
+	 * @param millis
+	 */
+	public void setTime(long millis) {
+		labelTimer.setText(millis+"ms");
+	}
+	
+	/**
+	 * Resets the text showing in the labelTimer JLabel
+	 */
+	public void resetTime() {
+		labelTimer.setText("");
+	}
+
+	/**
+	 * Hides the 'Elapsed time' and time text
+	 */
+	public void hideTime() {
+		timerPanel.setVisible(false);
+		settingsPanel.revalidate();
+	}
+	
+	/**
+	 * Hides the 'Elapsed time' and time text
+	 */
+	public void showTime() {
+		timerPanel.setVisible(true);
+		settingsPanel.revalidate();
+		frame.pack();
+	}
+	
+	/**
 	 * Adds the appropriate action listeners for each UI element
 	 */
 	public void addActionListeners() {
@@ -403,7 +689,6 @@ public class MazeDrawer {
 		btnGenerate.addActionListener(alg);
 		btnAbort.addActionListener(alg);
 		randomCheckBox.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (randomCheckBox.isSelected()) {
@@ -414,7 +699,6 @@ public class MazeDrawer {
 			}
 		});
 		animationCheckBox.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (animationCheckBox.isSelected()) {
@@ -422,6 +706,79 @@ public class MazeDrawer {
 				} else {
 					generator.setAnimation(false);
 				}
+			}
+		});
+		addSelectAllOnFocusActionListener(seed);
+		addSelectAllOnFocusActionListener(widthInput);
+		addSelectAllOnFocusActionListener(heightInput);
+		addSliderChangedListener(this.animationSlider);
+		addKeyListener();
+	}
+	
+	/**
+	 * Adds a key listener to the program such that keypresses can be registered
+	 * and handled accordingly regardless of where the user's focus is.
+	 */
+	public void addKeyListener() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+			.addKeyEventDispatcher(new KeyEventDispatcher() {
+				@Override
+				public boolean dispatchKeyEvent(KeyEvent e) {
+					// Only events of key pressed down, not released etc.
+					if (KeyEvent.KEY_PRESSED == e.getID()) {
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_ESCAPE:
+							btnAbort.doClick();
+							break;
+						case KeyEvent.VK_ENTER:
+							btnGenerate.doClick();
+							break;
+						case KeyEvent.VK_R:
+							btnAbort.doClick();
+							btnGenerate.doClick();
+							break;
+						default:
+							break;
+						}
+					}
+					return false;
+				}
+			});
+	}
+	
+	/**
+	 * Adds a changed listener to the slider to call a function every time
+	 * the slider is changed.
+	 * @param slider
+	 */
+	public void addSliderChangedListener(JSlider slider) {
+		slider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				generator.setAnimationSpeed(getAnimationSliderSpeed());
+			}
+		});
+	}
+	
+	/**
+	 * Selects all text in a given text field when that text field gets focus.
+	 * @param field
+	 */
+	public void addSelectAllOnFocusActionListener(JTextField field) {
+		field.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				field.select(0, 0);
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						field.selectAll();
+					}
+				});
 			}
 		});
 	}
@@ -432,12 +789,11 @@ public class MazeDrawer {
 	 */
 	public void addCbAlgorithmsActionListener(JComboBox<String> cbAlgorithms) {
 		ActionListener cbActionListener = new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String selectedItem = (String) cbAlgorithms.getSelectedItem();
-				System.out.println("Selected: " + selectedItem);
-				generator.setMazeType(selectedItem.toLowerCase());
+				MazeType mazeType = MazeType.parseString(selectedItem);
+				generator.setMazeType(mazeType);
 			}
 		};
 		cbAlgorithms.addActionListener(cbActionListener);

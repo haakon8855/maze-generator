@@ -8,10 +8,10 @@ import mazeGenerator.SwingWorkerGenerate;
 
 public class MazeGenerator {
 	
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	
-	private int width, height, animationDelay;
-	private String mazeType;
+	private int width, height, animationDelay, minDelay, maxDelay;
+	private MazeType mazeType;
 	private long seed;
 	private boolean timer, animate;
 	
@@ -23,31 +23,60 @@ public class MazeGenerator {
 
 		this.width = cfg.getPositiveInteger("width");
 		this.height = cfg.getPositiveInteger("height");
-		if (width < 5 || height < 5) {
-			width = 5;
-			height = 5;
-		}
-		if (height/width >= 3) {
-			height = 2*width;
-		}
+		setDimensions(width, height);
 
-		this.mazeType = cfg.get("type").toLowerCase();
+		this.mazeType = cfg.getMazeType();
 
 		this.animate = cfg.getBoolean("animate");
 		this.animationDelay = cfg.getPositiveInteger("animationDelay");
+		this.minDelay = cfg.getPositiveInteger("animationSliderMin");
+		this.maxDelay = cfg.getPositiveInteger("animationSliderMax");
 
 		this.timer = cfg.getBoolean("timer");
 		
 		this.seed = cfg.getLong("seed");
 
-		this.drawer = new MazeDrawer(width, height, animationDelay, this);
+		this.drawer = new MazeDrawer(width, height, animationDelay, animate,
+									 seed, this);
+		this.drawer.setWidthValue(width);
+		this.drawer.setHeightValue(height);
+	}
+	
+	/**
+	 * Set the maze dimensions
+	 * @param width in blocks
+	 * @param height in blocks
+	 */
+	public void setDimensions(int width, int height) {
+		width = Math.max(5, width);
+		height = Math.max(5, height);
+		width = Math.min(width, 3*height);
+		height = Math.min(height, 3*width);
+		this.width = width;
+		this.height = height;
+	}
+	
+	/**
+	 * Getter for maze Width
+	 * @return Width of the maze in blocks
+	 */
+	public int getWidth() {
+		return width;
+	}
+	
+	/**
+	 * Getter for maze height
+	 * @return Height of the maze in blocks
+	 */
+	public int getHeight() {
+		return height;
 	}
 	
 	/**
 	 * Gets the currently selected maze type
 	 * @return String representing the currently selected type
 	 */
-	public String getMazeType() {
+	public MazeType getMazeType() {
 		return mazeType;
 	}
 	
@@ -55,7 +84,7 @@ public class MazeGenerator {
 	 * Sets the maze type
 	 * @param String mazeType representing the currently selected type
 	 */
-	public void setMazeType(String mazeType) {
+	public void setMazeType(MazeType mazeType) {
 		this.mazeType = mazeType;
 	}
 	
@@ -67,8 +96,31 @@ public class MazeGenerator {
 		this.seed = seed;
 	}
 	
+	/**
+	 * Sets whether animations are to be shown or not
+	 * @param showAnimations, boolean
+	 */
 	public void setAnimation(boolean showAnimations) {
 		this.animate = showAnimations;
+	}
+	
+	/**
+	 * Sets the speed at which animations are to be drawn
+	 * @param float animationSpeed, number between 0 and 1 indicating slider val
+	 */
+	public void setAnimationSpeed(float animationSpeed) {
+		float inverse = 1 - animationSpeed;
+		this.animationDelay = Math.round((inverse * (maxDelay-minDelay)) + minDelay);
+	}
+	
+	/**
+	 * Gets the speed at which animations are to be drawn
+	 * @return A float between 0 and 1 representing the animation speed
+	 */
+	public float getAnimationSpeed() {
+		float inverse = ((float) this.animationDelay - minDelay) / (maxDelay-minDelay);
+		float speed = 1 - inverse;
+		return speed;
 	}
 
 	/**
@@ -77,11 +129,11 @@ public class MazeGenerator {
 	 */
 	private MazeGen makeNewGenerator() {
 		switch (mazeType) {
-			case "dfs":
+			case DFS:
 				gen = new MazeGenDFS(width, height, drawer, seed,
 									 animate, animationDelay);
 				break;
-			case "prim":
+			case PRIM:
 				gen = new MazeGenPrim(width, height, drawer, seed,
 									  animate, animationDelay);
 				break;
@@ -111,6 +163,8 @@ public class MazeGenerator {
 			if (timer) {
 				endTime = System.currentTimeMillis();
 				elapsed = endTime - startTime;
+				drawer.showTime();
+				drawer.setTime(elapsed);
 				System.out.println("Time: " + elapsed + "ms");
 			}
 			drawer.updateMaze(gen.getMaze());

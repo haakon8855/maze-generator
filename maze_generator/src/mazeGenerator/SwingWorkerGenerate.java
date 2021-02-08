@@ -57,5 +57,21 @@ public class SwingWorkerGenerate extends SwingWorker<Integer, int[][]> {
 	public void update(Maze maze) {
 		publish(MazeDrawer.generateBitmap(maze));
 	}
+	
+	/**
+	 * Runs when the swingworker is either done, or interrupted, causing it to 
+	 * cancel.
+	 */
+	@Override
+	protected void done() {
+		if (MazeGenerator.DEBUG) {
+			if (isCancelled()) {
+				System.out.println("Cancelled!");
+			} else {
+				System.out.println("Done!");
+			}
+		}
+		super.done();
+	}
 
 }

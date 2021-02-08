@@ -1,5 +1,7 @@
 package mazeGenerator;
 
+import java.util.Random;
+
 import datatypes.Maze;
 import datatypes.Wall;
 import program.MazeGenerator;
@@ -77,6 +79,16 @@ public abstract class MazeGen {
 	public long getSeed() {
 		return seed;
 	}
+
+	/**
+	 * Sets the seed to a new random one, and then returns this seed.
+	 * @param rnd, of type Java.util.Random
+	 * @return The new seed
+	 */
+	public long generateNewSeed(Random rnd) {
+		this.seed = Math.abs(rnd.nextLong());
+		return this.seed;
+	}
 	
 	/**
 	 * Sets the animation delay to the given value
@@ -136,6 +148,9 @@ public abstract class MazeGen {
 	 * Delays and then updates the drawn maze.
 	 */
 	public void mazeChanged(SwingWorkerGenerate worker) throws InterruptedException {
+		if (worker.isCancelled()) {
+			throw new InterruptedException("Job got cancelled.");
+		}
 		if (animate) {
 			worker.update(maze);
 			delay();
