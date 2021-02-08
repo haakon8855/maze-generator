@@ -107,6 +107,7 @@ public class MazeDrawer {
 		// Main flowLayout-style-container for all other UI-elements
 		this.container = new JPanel(new FlowLayout());
 		
+		
 		// Initialize the canvas
 		initCanvas(blocksize, blocksize);
 		
@@ -682,6 +683,10 @@ public class MazeDrawer {
 							btnAbort.doClick();
 							break;
 						case KeyEvent.VK_ENTER:
+							btnGenerate.doClick();
+							break;
+						case KeyEvent.VK_R:
+							btnAbort.doClick();
 							btnGenerate.doClick();
 							break;
 						default:
